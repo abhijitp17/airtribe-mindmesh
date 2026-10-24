@@ -16,5 +16,5 @@ alembic>=1.13
 redis>=8.1,<9  # shared rate limits + report cache when REDIS_URL is set
 sentry-sdk>=2.71,<3  # error tracking, only active when SENTRY_DSN is set
 # Optional OCR (OCR=tesseract): also needs the tesseract-ocr system package
-pytesseract>=0.3.10
+pytesseract>=0.3.13
 pypdfium2>=5.14.0  # renders pages to images for OCR (core/ocr.py)
