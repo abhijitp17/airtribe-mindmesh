@@ -61,7 +61,7 @@ jobs:
         run: python -m evals.graph_eval --gate
       - name: Upload eval report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: eval-report
           path: backend/eval-report.json
@@ -185,7 +185,7 @@ jobs:
         run: npm run e2e
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
