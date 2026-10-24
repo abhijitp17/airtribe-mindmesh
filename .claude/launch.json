@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Mindmesh API",
+      "runtimeExecutable": "/Users/abhijitpadhi/Desktop/Mindmesh/backend/.venv/bin/python",
+      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--reload", "--host", "127.0.0.1", "--port", "8300"],
+      "cwd": "backend",
+      "port": 8300
+    },
+    {
+      "name": "Mindmesh web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "web",
+      "port": 3300
+    }
+  ]
+}

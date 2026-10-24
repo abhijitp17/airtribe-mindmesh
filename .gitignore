@@ -1,0 +1,25 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+backend/data/
+backend/*.db
+web/node_modules/
+web/.next/
+web/.next.nosync/
+web/tsconfig.tsbuildinfo
+.DS_Store
+web/.next-e2e/
+web/.next-e2e.nosync/
+web/test-results/
+web/playwright-report/
+web/next-env.d.ts
+
+# Real PDFs and gold sets for model evals: copyright and privacy, never committed
+backend/evals/private/
+
+# Local env files hold secrets (Clerk, SMTP, Anthropic). Only *.example files are committed.
+.env.local
+.env.*.local
+**/.env.local

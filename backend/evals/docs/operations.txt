@@ -1,0 +1,84 @@
+# title: Operations Management Fundamentals
+CHAPTER 1 FLOW AND CAPACITY
+
+1.1 Little's Law
+
+Little's Law states that average work in process equals average throughput multiplied by average cycle time. Written as a formula, WIP = TH x CT. The law holds for any stable system over a long period, regardless of the distributions of arrivals or processing times, and it applies equally to factories, hospitals, call centres and software teams.
+
+Because the three quantities are linked, knowing any two gives the third. A clinic that sees 30 patients per hour and has on average 15 patients somewhere in the building has an average time in system of half an hour. A production line with 120 jobs in process and a throughput of 40 jobs per day has an average cycle time of three days.
+
+Little's Law is also a management lever. If throughput is fixed by demand, the only way to shorten cycle time is to reduce work in process. Releasing more work into a line that is already at capacity does not raise output; it only makes every job wait longer.
+
+1.2 Throughput and Capacity
+
+Capacity is the maximum rate at which a resource can produce good output, usually measured in units per hour. Throughput is the rate at which the system actually produces good output. Utilization is the ratio of the arrival rate to the capacity of a resource. A station that receives 9 jobs per hour and can process 10 jobs per hour runs at 90 percent utilization.
+<<<PAGE>>>
+CHAPTER 2 VARIABILITY
+
+2.1 Sources of Variability
+
+Variability is any departure from uniform, predictable behaviour. Processing times vary because of operator skill, setups, machine failures and rework. Arrivals vary because customers and upstream stations do not deliver work at perfectly regular intervals. Variability that is not planned for always degrades performance.
+
+The coefficient of variation is the standard deviation divided by the mean. It is a dimensionless measure that allows variability to be compared across processes with very different average times. A coefficient of variation below 0.75 is usually considered low, between 0.75 and 1.33 moderate, and above 1.33 high.
+
+2.2 Queueing and Utilization
+
+Queue time grows nonlinearly as utilization approaches 100 percent. The Kingman approximation expresses expected waiting time as the product of a variability term, a utilization term and the mean processing time. The utilization term is u divided by 1 minus u, so moving a station from 80 percent to 95 percent utilization more than quadruples the expected wait in queue.
+
+This is why a resource that is busy all the time is not a sign of efficiency. A system that runs its machines close to full load must accept long and unpredictable delays unless it removes variability first.
+
+2.3 Buffering Against Variability
+
+Variability in a production system will be buffered by some combination of inventory, capacity and time. A firm that refuses to hold inventory and refuses to keep spare capacity will pay with long lead times and late deliveries. Good design chooses the cheapest buffer for the situation rather than pretending the buffer is not needed.
+<<<PAGE>>>
+CHAPTER 3 BOTTLENECKS
+
+3.1 Identifying the Bottleneck
+
+The bottleneck is the resource with the highest utilization, which is the same as the lowest effective capacity relative to its load. The bottleneck sets the throughput of the entire line. An hour lost at the bottleneck is an hour lost for the whole system, while an hour saved at a non-bottleneck station is a mirage.
+
+In practice the bottleneck can be found by looking for the station with the largest queue in front of it, or by computing the load on each resource from the product mix and dividing by its available hours.
+
+3.2 The Theory of Constraints
+
+The Theory of Constraints offers five focusing steps. First, identify the constraint. Second, decide how to exploit it, for example by never letting it sit idle during breaks. Third, subordinate everything else to that decision, so that other stations work at the pace of the constraint. Fourth, elevate the constraint by adding capacity if it is still binding. Fifth, if the constraint has moved, go back to the first step and do not let inertia become the new constraint.
+
+3.3 Drum-Buffer-Rope
+
+Drum-buffer-rope is a scheduling method built on the Theory of Constraints. The drum is the bottleneck, which sets the pace for the whole plant. The buffer is a small stock of work placed in front of the bottleneck so that it is never starved. The rope is a release signal that ties the entry of new material to the consumption rate of the bottleneck, which keeps work in process under control.
+<<<PAGE>>>
+CHAPTER 4 INVENTORY POLICIES
+
+4.1 Economic Order Quantity
+
+The economic order quantity model balances the fixed cost of placing an order against the cost of holding stock. With annual demand D, fixed cost per order S and holding cost per unit per year H, the optimal order size is the square root of 2DS divided by H. At this quantity the annual ordering cost equals the annual holding cost.
+
+The total cost curve is flat near the optimum. Ordering 20 percent more or less than the economic order quantity raises total cost by only about 2 percent, which makes the model robust to rough estimates of its inputs.
+
+4.2 Reorder Point and Safety Stock
+
+In a continuous review system, an order is placed when the inventory position falls to the reorder point. The reorder point equals expected demand during the replenishment lead time plus safety stock. Safety stock protects against demand during the lead time being higher than expected.
+
+Safety stock is commonly set as a service factor z multiplied by the standard deviation of demand during the lead time. A cycle service level of 95 percent corresponds to a z value of about 1.65, and raising the target to 99 percent requires a z value of about 2.33.
+
+4.3 Periodic Review
+
+In a periodic review system, inventory is checked at fixed intervals and an order is placed to bring the position up to a base-stock level. Periodic review is easier to coordinate across many items from the same supplier, but it needs more safety stock because it must cover demand over the review period plus the lead time.
+<<<PAGE>>>
+CHAPTER 5 LEAN AND PULL SYSTEMS
+
+5.1 Push and Pull
+
+A push system releases work according to a schedule or forecast, whether or not downstream stations are ready. A pull system authorizes production only when downstream consumption creates a signal. The key distinction is that a pull system places an explicit limit on work in process, while a push system does not.
+
+5.2 Kanban
+
+Kanban is a card-based pull mechanism. Each card authorizes the production or movement of one standard container. The number of kanban cards equals demand during the lead time multiplied by one plus a safety factor, divided by the container size. Removing cards over time exposes problems such as long setups or unreliable machines, which can then be fixed.
+
+5.3 CONWIP
+
+CONWIP stands for constant work in process. A CONWIP line keeps the total number of jobs in the line fixed: a new job enters only when a finished job leaves. CONWIP is simpler to run than kanban when the product mix changes often, because it uses one set of cards for the whole line rather than a set for every part number.
+
+5.4 Setup Reduction
+
+Long setups force large batches, and large batches inflate work in process and cycle time. The single-minute exchange of die method separates internal setup work, which can only be done while the machine is stopped, from external setup work, which can be done while the machine is still running. Converting internal steps to external ones is the first and cheapest way to shorten changeovers.

@@ -1,0 +1,21 @@
+{
+  "docs/operations.txt": {
+    "concepts": ["Little's Law", "Throughput", "Capacity", "Variability", "Queueing", "Utilization", "Buffering",
+                 "Bottleneck", "Theory of Constraints", "Drum-Buffer-Rope", "Economic Order Quantity", "Reorder Point",
+                 "Safety Stock", "Periodic Review", "Push and Pull", "Kanban", "CONWIP", "Setup Reduction"],
+    "prerequisites": [["Little's Law", "CONWIP"], ["Throughput", "Bottleneck"], ["Capacity", "Bottleneck"],
+                      ["Variability", "Queueing"], ["Utilization", "Queueing"], ["Variability", "Buffering"],
+                      ["Variability", "Safety Stock"], ["Reorder Point", "Safety Stock"], ["Bottleneck", "Theory of Constraints"],
+                      ["Bottleneck", "Drum-Buffer-Rope"], ["Push and Pull", "Kanban"], ["Push and Pull", "CONWIP"],
+                      ["Economic Order Quantity", "Setup Reduction"]]
+  },
+  "docs/finance.txt": {
+    "concepts": ["Net Working Capital", "Liquidity Ratios", "Cash Conversion Cycle", "Discounting", "Net Present Value",
+                 "Internal Rate of Return", "Weighted Average Cost of Capital", "Cost of Equity", "Leverage",
+                 "Modigliani-Miller Propositions", "Dividends", "Buybacks"],
+    "prerequisites": [["Net Working Capital", "Cash Conversion Cycle"], ["Discounting", "Net Present Value"],
+                      ["Net Present Value", "Internal Rate of Return"], ["Cost of Equity", "Weighted Average Cost of Capital"],
+                      ["Weighted Average Cost of Capital", "Net Present Value"], ["Leverage", "Modigliani-Miller Propositions"],
+                      ["Net Working Capital", "Liquidity Ratios"]]
+  }
+}

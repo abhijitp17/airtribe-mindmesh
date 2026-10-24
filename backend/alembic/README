@@ -1,0 +1,25 @@
+Mindmesh migrations (Alembic)
+=============================
+
+The URL comes from DATABASE_URL (app.config), not alembic.ini. Run from backend/:
+
+    alembic upgrade head                         # apply migrations
+    alembic revision --autogenerate -m "add x"   # after editing a models*.py file; review the diff!
+    alembic downgrade -1
+
+Switching from create_all (today's boot behaviour in app/main.py lifespan):
+
+1. Fresh database: `alembic upgrade head`. Revision 0001 creates every table.
+2. Existing database already built by create_all: the schema matches 0001, so
+   don't re-create it. Mark it as migrated with `alembic stamp 0001`, then
+   `alembic upgrade head` for anything newer.
+3. Then remove `init_db()` (Base.metadata.create_all) from the API lifespan and
+   worker.py, and run `alembic upgrade head` as a release step (for example, a
+   one-off `docker compose run --rm api alembic upgrade head` before starting api).
+   create_all never alters existing tables, so once the schema starts evolving,
+   only Alembic keeps it correct.
+4. Apply row-level security after migrating: `psql "$DATABASE_URL" -f sql/rls.sql`
+   (Postgres only, idempotent). Re-run it whenever a migration adds an owner_id table.
+
+Rules: never edit an applied revision; one revision per change; keep index names
+SQLAlchemy-conventional (ix_<table>_<column>) so autogenerate stays quiet.

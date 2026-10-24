@@ -1,0 +1,94 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16  # pgvector ready for semantic search in the next phase
+    environment:
+      POSTGRES_USER: mindmesh
+      POSTGRES_PASSWORD: mindmesh
+      POSTGRES_DB: mindmesh
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Creates the non-superuser mindmesh_app role the api/worker use (superusers bypass RLS).
+      # Runs only when pgdata is empty; on an existing volume run it once by hand.
+      - ./backend/sql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mindmesh"]
+      interval: 3s
+      retries: 20
+    ports:
+      - "5432:5432"
+
+  redis:
+    # Shared rate limits and the signed-out report cache across api processes.
+    # Not published to the host: only the api talks to it.
+    image: redis:8-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]  # ephemeral by design
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 20
+
+  migrate:
+    # Alembic migrations + row-level security on every start, before api/worker (idempotent).
+    build: ./backend
+    command: ["python", "-m", "app.tools.migrate"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://mindmesh_app:mindmesh_app@db:5432/mindmesh
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://mindmesh_app:mindmesh_app@db:5432/mindmesh
+      STORAGE_DIR: /data/uploads
+      CORS_ORIGINS: http://localhost:3300
+      JOB_BACKEND: db
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    ports:
+      - "8300:8000"  # host 8300: Mindmesh's dedicated local port
+
+  worker:
+    build: ./backend
+    command: ["python", "worker.py"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://mindmesh_app:mindmesh_app@db:5432/mindmesh
+      STORAGE_DIR: /data/uploads
+      JOB_BACKEND: db
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    stop_grace_period: 60s
+
+  web:
+    build:
+      context: ./web
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8300
+    depends_on:
+      - api
+    ports:
+      - "3300:3000"  # host 3300: Mindmesh's dedicated local port
+
+volumes:
+  pgdata:
+  uploads:

@@ -1,0 +1,369 @@
+{
+ "version": "2026-10-24",
+ "skills": [
+  {
+   "slug": "sql",
+   "name": "SQL",
+   "category": "technical",
+   "aliases": [
+    "sql queries",
+    "structured query language",
+    "sql joins",
+    "window functions"
+   ]
+  },
+  {
+   "slug": "python",
+   "name": "Python",
+   "category": "technical",
+   "aliases": [
+    "python programming",
+    "pandas"
+   ]
+  },
+  {
+   "slug": "statistics",
+   "name": "Statistics",
+   "category": "technical",
+   "aliases": [
+    "statistical modelling",
+    "statistical modeling",
+    "probability",
+    "hypothesis testing",
+    "significance"
+   ]
+  },
+  {
+   "slug": "ab-testing",
+   "name": "A/B testing and experimentation",
+   "category": "technical",
+   "aliases": [
+    "ab testing",
+    "a/b testing",
+    "experiment design",
+    "experimentation",
+    "controlled experiments"
+   ]
+  },
+  {
+   "slug": "data-visualisation",
+   "name": "Data visualisation and dashboards",
+   "category": "tool",
+   "aliases": [
+    "dashboards",
+    "tableau",
+    "power bi",
+    "data visualization",
+    "reporting"
+   ]
+  },
+  {
+   "slug": "forecasting",
+   "name": "Demand forecasting",
+   "category": "technical",
+   "aliases": [
+    "forecasting",
+    "demand planning",
+    "time series forecasting",
+    "time series"
+   ]
+  },
+  {
+   "slug": "machine-learning",
+   "name": "Machine learning",
+   "category": "technical",
+   "aliases": [
+    "ml",
+    "predictive modelling",
+    "gradient boosting",
+    "regression models"
+   ]
+  },
+  {
+   "slug": "data-cleaning",
+   "name": "Data cleaning and preparation",
+   "category": "technical",
+   "aliases": [
+    "data preparation",
+    "data wrangling",
+    "etl",
+    "data pipelines"
+   ]
+  },
+  {
+   "slug": "stakeholder-management",
+   "name": "Stakeholder management",
+   "category": "behavioral",
+   "aliases": [
+    "stakeholder communication",
+    "managing stakeholders",
+    "working with stakeholders"
+   ]
+  },
+  {
+   "slug": "communication",
+   "name": "Communication",
+   "category": "behavioral",
+   "aliases": [
+    "written communication",
+    "presentation skills",
+    "presenting",
+    "storytelling with data"
+   ]
+  },
+  {
+   "slug": "people-management",
+   "name": "People management",
+   "category": "behavioral",
+   "aliases": [
+    "team leadership",
+    "people leadership",
+    "leading a team",
+    "managing a team",
+    "line management"
+   ]
+  },
+  {
+   "slug": "prioritisation",
+   "name": "Prioritisation",
+   "category": "behavioral",
+   "aliases": [
+    "prioritization",
+    "roadmap prioritisation",
+    "trade-offs"
+   ]
+  },
+  {
+   "slug": "product-discovery",
+   "name": "Product discovery and user research",
+   "category": "domain",
+   "aliases": [
+    "user research",
+    "customer discovery",
+    "user interviews",
+    "discovery"
+   ]
+  },
+  {
+   "slug": "product-metrics",
+   "name": "Product metrics",
+   "category": "domain",
+   "aliases": [
+    "kpis",
+    "key performance indicators",
+    "success metrics",
+    "north star metric",
+    "funnel analysis"
+   ]
+  },
+  {
+   "slug": "system-design",
+   "name": "System design",
+   "category": "technical",
+   "aliases": [
+    "software architecture",
+    "distributed systems",
+    "scalability"
+   ]
+  },
+  {
+   "slug": "algorithms",
+   "name": "Data structures and algorithms",
+   "category": "technical",
+   "aliases": [
+    "algorithms",
+    "data structures",
+    "dsa"
+   ]
+  },
+  {
+   "slug": "testing",
+   "name": "Software testing",
+   "category": "technical",
+   "aliases": [
+    "automated testing",
+    "unit testing",
+    "test automation",
+    "code quality"
+   ]
+  },
+  {
+   "slug": "cloud",
+   "name": "Cloud infrastructure",
+   "category": "tool",
+   "aliases": [
+    "aws",
+    "gcp",
+    "azure",
+    "containers",
+    "kubernetes",
+    "docker"
+   ]
+  },
+  {
+   "slug": "incident-response",
+   "name": "Incident response and reliability",
+   "category": "technical",
+   "aliases": [
+    "monitoring",
+    "on-call",
+    "reliability",
+    "observability"
+   ]
+  },
+  {
+   "slug": "capacity-planning",
+   "name": "Capacity planning",
+   "category": "domain",
+   "aliases": [
+    "capacity",
+    "throughput",
+    "bottleneck analysis",
+    "bottlenecks",
+    "utilisation",
+    "utilization"
+   ]
+  },
+  {
+   "slug": "littles-law",
+   "name": "Little's Law and flow",
+   "category": "domain",
+   "aliases": [
+    "littles law",
+    "work in process",
+    "wip",
+    "cycle time",
+    "flow"
+   ]
+  },
+  {
+   "slug": "variability",
+   "name": "Variability and queueing",
+   "category": "domain",
+   "aliases": [
+    "queueing",
+    "queueing theory",
+    "queues",
+    "variability"
+   ]
+  },
+  {
+   "slug": "inventory-management",
+   "name": "Inventory management",
+   "category": "domain",
+   "aliases": [
+    "inventory policy",
+    "inventory policies",
+    "safety stock",
+    "reorder point",
+    "economic order quantity",
+    "eoq",
+    "periodic review"
+   ]
+  },
+  {
+   "slug": "lean",
+   "name": "Lean and continuous improvement",
+   "category": "domain",
+   "aliases": [
+    "lean",
+    "kanban",
+    "conwip",
+    "six sigma",
+    "continuous improvement",
+    "setup reduction",
+    "pull systems"
+   ]
+  },
+  {
+   "slug": "theory-of-constraints",
+   "name": "Theory of Constraints",
+   "category": "domain",
+   "aliases": [
+    "toc",
+    "drum-buffer-rope",
+    "constraints"
+   ]
+  },
+  {
+   "slug": "supply-chain",
+   "name": "Supply chain management",
+   "category": "domain",
+   "aliases": [
+    "supply chain",
+    "procurement",
+    "logistics",
+    "warehouse management"
+   ]
+  },
+  {
+   "slug": "financial-modelling",
+   "name": "Financial modelling",
+   "category": "technical",
+   "aliases": [
+    "financial modeling",
+    "excel modelling",
+    "excel",
+    "spreadsheet modelling"
+   ]
+  },
+  {
+   "slug": "valuation",
+   "name": "Valuation",
+   "category": "domain",
+   "aliases": [
+    "net present value",
+    "npv",
+    "internal rate of return",
+    "irr",
+    "discounting",
+    "discounted cash flow",
+    "dcf"
+   ]
+  },
+  {
+   "slug": "cost-of-capital",
+   "name": "Cost of capital",
+   "category": "domain",
+   "aliases": [
+    "wacc",
+    "weighted average cost of capital",
+    "cost of equity",
+    "capm"
+   ]
+  },
+  {
+   "slug": "working-capital",
+   "name": "Working capital and cash flow",
+   "category": "domain",
+   "aliases": [
+    "net working capital",
+    "cash conversion cycle",
+    "liquidity ratios",
+    "cash flow"
+   ]
+  },
+  {
+   "slug": "budgeting",
+   "name": "Budgeting and forecasting (FP&A)",
+   "category": "domain",
+   "aliases": [
+    "budgeting",
+    "fp&a",
+    "variance analysis",
+    "planning cycles"
+   ]
+  },
+  {
+   "slug": "capital-structure",
+   "name": "Capital structure and payout",
+   "category": "domain",
+   "aliases": [
+    "leverage",
+    "modigliani-miller propositions",
+    "dividends",
+    "buybacks"
+   ]
+  }
+ ]
+}

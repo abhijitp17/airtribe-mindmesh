@@ -1,0 +1,47 @@
+name: Release images
+
+# Push a tag like v0.2.0 to build the api and web images and publish them to GitHub Container
+# Registry (ghcr.io/<owner>/<repo>/api and /web). Deploy by pulling these tags on your host.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: api
+            context: backend
+          - name: web
+            context: web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ matrix.name }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=sha
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # The web bundle bakes in public settings: set these repository variables per environment.
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ vars.API_PUBLIC_URL }}
+            NEXT_PUBLIC_AUTH_PROVIDER=${{ vars.AUTH_PROVIDER }}
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ vars.CLERK_PUBLISHABLE_KEY }}

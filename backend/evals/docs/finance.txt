@@ -1,0 +1,74 @@
+# title: Corporate Finance Essentials
+CHAPTER 1 WORKING CAPITAL
+
+1.1 Net Working Capital
+
+Net working capital is current assets minus current liabilities. Current assets include cash, accounts receivable and inventory, and current liabilities include accounts payable, accrued expenses and short-term debt. A positive figure means the firm's short-term assets more than cover its short-term obligations.
+
+Working capital ties up money that could otherwise be invested elsewhere. An increase in net working capital is a use of cash, and a decrease is a source of cash. This is why a fast-growing company can be profitable on paper and still run out of money: the receivables and inventory needed to support higher sales must be financed before customers pay.
+
+1.2 Liquidity Ratios
+
+The current ratio is current assets divided by current liabilities. The quick ratio, also called the acid-test ratio, excludes inventory from current assets because inventory may be hard to turn into cash at short notice. A quick ratio below 1.0 means the firm could not settle its current liabilities from its most liquid assets alone.
+<<<PAGE>>>
+CHAPTER 2 THE CASH CONVERSION CYCLE
+
+2.1 Components of the Cycle
+
+The cash conversion cycle measures the number of days between paying suppliers for inputs and collecting cash from customers for the finished product. It equals days inventory outstanding plus days sales outstanding minus days payables outstanding.
+
+Days inventory outstanding is average inventory divided by cost of goods sold, multiplied by 365. Days sales outstanding is average accounts receivable divided by revenue, multiplied by 365. Days payables outstanding is average accounts payable divided by cost of goods sold, multiplied by 365.
+
+2.2 Worked Example
+
+A retailer holds inventory for 45 days, collects from customers in 30 days and pays suppliers in 40 days. Its cash conversion cycle is 45 plus 30 minus 40, which is 35 days. For every day of that cycle the firm must finance its operations from its own funds or from short-term borrowing.
+
+2.3 Managing the Cycle
+
+A shorter cycle frees cash. Firms can reduce inventory days through better forecasting, speed up collections by invoicing promptly and offering early payment discounts, and extend payables by negotiating longer supplier terms. Some retailers achieve a negative cash conversion cycle, which means customers pay them before they pay their suppliers, so growth generates cash instead of consuming it.
+<<<PAGE>>>
+CHAPTER 3 TIME VALUE AND NET PRESENT VALUE
+
+3.1 Discounting
+
+A dollar received today is worth more than a dollar received in the future, because money available now can be invested to earn a return. The present value of a future cash flow is the cash flow divided by one plus the discount rate, raised to the power of the number of periods. At a discount rate of 10 percent, 110 dollars received in one year has a present value of 100 dollars.
+
+3.2 The NPV Rule
+
+Net present value is the sum of the present values of all expected cash flows of a project, including the initial investment as a negative cash flow at time zero. The NPV rule says to accept a project if its net present value is positive and reject it if it is negative, because a positive NPV means the project earns more than the opportunity cost of capital and increases shareholder value.
+
+For example, a project that costs 1,000 dollars today and returns 600 dollars at the end of each of the next two years has, at a 10 percent discount rate, a present value of inflows of about 1,041 dollars. Its NPV is therefore about 41 dollars, so the project should be accepted.
+
+3.3 Internal Rate of Return
+
+The internal rate of return is the discount rate at which a project's net present value equals zero. A project is attractive when its IRR exceeds the cost of capital. IRR can mislead when comparing mutually exclusive projects of different size, and a project with cash flows that change sign more than once can have several IRRs. When the two methods disagree, NPV should be preferred.
+<<<PAGE>>>
+CHAPTER 4 COST OF CAPITAL
+
+4.1 Weighted Average Cost of Capital
+
+The weighted average cost of capital, or WACC, is the average rate of return a company must pay to all its investors, weighted by the market value of each source of finance. With equity E, debt D and total value V equal to E plus D, WACC equals E over V times the cost of equity plus D over V times the cost of debt times one minus the tax rate.
+
+The cost of debt is multiplied by one minus the tax rate because interest payments are tax deductible, which creates a tax shield. For a firm financed 60 percent by equity costing 12 percent and 40 percent by debt costing 6 percent, with a 25 percent tax rate, WACC is 0.6 times 12 plus 0.4 times 6 times 0.75, which is 9 percent.
+
+4.2 Cost of Equity
+
+The cost of equity is usually estimated with the capital asset pricing model. CAPM says the expected return on a stock equals the risk-free rate plus beta multiplied by the market risk premium. Beta measures how strongly the stock moves with the overall market; a beta above 1 means the stock is more volatile than the market.
+
+4.3 Using WACC
+
+WACC is the appropriate discount rate for projects that have the same risk as the firm's existing business. Using a single company-wide WACC for a much riskier venture overstates its value, while using it for a safer project understates it. In those cases the firm should use a project-specific rate that reflects the risk of the cash flows being valued.
+<<<PAGE>>>
+CHAPTER 5 CAPITAL STRUCTURE AND PAYOUT
+
+5.1 Leverage
+
+Financial leverage is the use of debt to finance assets. Leverage magnifies returns to shareholders in good years and magnifies losses in bad years. Because debt holders are paid before shareholders, more debt makes equity riskier, so the cost of equity rises as leverage increases.
+
+5.2 The Modigliani-Miller Propositions
+
+In a world without taxes, bankruptcy costs or information asymmetry, Modigliani and Miller showed that the value of a firm does not depend on how it is financed. Once corporate taxes are introduced, the interest tax shield makes debt valuable, but financial distress costs eventually offset that benefit. The trade-off theory says firms choose a target debt level where the marginal tax benefit of debt equals the marginal expected cost of distress.
+
+5.3 Dividends and Buybacks
+
+Firms return cash to shareholders through dividends or share repurchases. Dividends tend to be sticky, because managers are reluctant to cut them and markets treat a cut as bad news. Buybacks are more flexible and let shareholders who do not sell defer taxes. Neither method creates value on its own; value comes from the investment decisions that generate the cash.

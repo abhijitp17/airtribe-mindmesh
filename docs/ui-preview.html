@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mindmesh, Aura UI preview</title>
+<style>
+/* ===== Aura design system: same tokens and classes as web/src/app/globals.css ===== */
+:root {
+  color-scheme: light;
+  --ink: #1D2321; --ink-2: #56605B; --ink-3: #8A948F;
+  --orange: #F2621A; --orange-press: #D9540F;
+  --mint: #D3EADC; --sky: #D2E5EE; --peach: #F7CDB0; --sage: #BFDDB4; --canvas: #F4F7F3;
+  --glass: rgba(255,255,255,0.62); --glass-strong: rgba(255,255,255,0.82); --glass-edge: rgba(255,255,255,0.92);
+  --solid: #FFFFFF; --line: rgba(29,35,33,0.09); --blur: 14px; --shadow: 0 10px 30px rgba(60,90,80,0.08);
+  --tint-gap: linear-gradient(160deg, rgba(255,255,255,0.78), rgba(247,205,176,0.6));
+  --tint-unknown: linear-gradient(160deg, rgba(255,255,255,0.78), rgba(210,229,238,0.75));
+  --tint-ready: linear-gradient(160deg, rgba(255,255,255,0.78), rgba(191,221,180,0.65));
+  --tint-warm: linear-gradient(160deg, rgba(255,255,255,0.78), rgba(247,205,176,0.45));
+  --r-xl: 28px; --r-lg: 22px; --r-md: 16px; --r-sm: 12px; --r-pill: 999px;
+  --font: "Avenir Next", Avenir, "Century Gothic", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--font); color: var(--ink); font-size: 15.5px; line-height: 1.55; background: #DCE3DE; font-variant-numeric: tabular-nums; }
+a { color: var(--ink); text-decoration: underline; text-decoration-color: rgba(29,35,33,0.3); text-underline-offset: 3px; }
+h1, h2, h3, h4 { font-family: var(--font); font-weight: 500; line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 .5rem; color: var(--ink); }
+h1 { font-size: 2.1rem; } h2 { font-size: 1.35rem; } h3 { font-size: 1.08rem; }
+.phone h1 { font-size: 1.7rem; }
+p { margin: 0 0 .75rem; }
+:focus-visible { outline: 2.5px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+h1:focus, h2:focus { outline: none; }
+::selection { background: var(--peach); }
+mark { background: rgba(247,205,176,0.85); color: var(--ink); padding: 0 .15rem; border-radius: 3px; }
+
+/* ===== Review bar (outside the app) ===== */
+.rb { position: sticky; top: 0; z-index: 100; background: #131716; color: #E8ECEA; padding: 8px 12px 10px; font-size: 13px; line-height: 1.3; box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+.rb-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.rb-row + .rb-row { margin-top: 6px; }
+.rb-title { font-weight: 600; margin-right: 6px; color: #fff; }
+.rb-screens { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; flex: 1 1 auto; min-width: 0; }
+.rb a, .rb button { font: inherit; font-size: 12.5px; color: #E8ECEA; background: #222826; border: 1px solid #343B38; border-radius: 8px; padding: 6px 10px; text-decoration: none; white-space: nowrap; cursor: pointer; min-height: 32px; display: inline-flex; align-items: center; }
+.rb a:hover, .rb button:hover { background: #2D3431; }
+.rb a[aria-current="page"] { background: #E8ECEA; color: #131716; border-color: #E8ECEA; }
+.rb button[aria-pressed="true"] { background: #E8ECEA; color: #131716; border-color: #E8ECEA; }
+.rb .grp { display: inline-flex; gap: 2px; padding: 2px; border-radius: 10px; background: #1B201E; }
+.rb .grp button { border-color: transparent; }
+.rb .note { color: #A7B0AB; margin-left: auto; }
+.rb :focus-visible { outline-color: #fff; }
+
+/* ===== Stage: phone frame or full width ===== */
+.stage.phone { display: flex; justify-content: center; padding: 22px 10px 40px; }
+.device { position: relative; background: var(--canvas); }
+.stage.phone .device { width: 390px; max-width: 100%; height: min(844px, calc(100vh - 120px)); min-height: 620px; border: 10px solid #1D2321; border-radius: 54px; overflow: hidden; box-shadow: 0 30px 70px rgba(20,35,28,.28), inset 0 0 0 1px #000; }
+.stage.desk .device { min-height: calc(100vh - 84px); }
+.statusbar { display: none; }
+.stage.phone .statusbar { display: flex; background: rgba(244,247,243,0.88); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); position: absolute; top: 0; left: 0; right: 0; height: 44px; z-index: 40; align-items: center; justify-content: space-between; padding: 0 26px 0 30px; font-size: 14px; font-weight: 600; pointer-events: none; }
+.statusbar .notch { position: absolute; left: 50%; top: 9px; transform: translateX(-50%); width: 110px; height: 30px; border-radius: 20px; background: #1D2321; }
+.statusbar .sig { display: flex; gap: 4px; align-items: center; }
+.statusbar .sig i { display: block; width: 4px; background: var(--ink); border-radius: 1px; }
+.scroll { position: relative; }
+.stage.phone .scroll { position: static; }
+.stage.phone .scroll { height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.stage.phone .scroll::-webkit-scrollbar { display: none; }
+.app { min-height: 100%; background:
+    radial-gradient(120% 60% at 0% 0%, #CFE6EC 0%, transparent 60%),
+    radial-gradient(90% 55% at 100% 8%, #DCEFD6 0%, transparent 62%),
+    radial-gradient(110% 70% at 70% 100%, #FBE3D2 0%, transparent 65%),
+    var(--canvas); }
+.phone .topbar.hide-phone { display: none; }
+.stage.desk .app { min-height: calc(100vh - 84px); }
+.stage.phone .app { padding-top: 44px; min-height: 100%; }
+.stage.phone .topbar { top: 44px; }
+.stage.desk .topbar { top: var(--rbh, 84px); }
+
+/* ===== Glass ===== */
+.glass, .card { background: var(--glass); border: 1px solid var(--glass-edge); border-radius: var(--r-lg); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+.card { padding: 1.2rem 1.3rem; }
+.phone .card { padding: 1rem 1.05rem; }
+.glass-strong { background: var(--glass-strong); }
+.hero-card { position: relative; overflow: hidden; border-radius: var(--r-xl); padding: 1.35rem; }
+.phone .hero-card { padding: 1.1rem; }
+.hero-card::before { content: ""; position: absolute; inset: -30% -10% auto 35%; height: 160%; pointer-events: none; background: radial-gradient(closest-side, rgba(247,205,176,0.7), transparent), radial-gradient(closest-side at 30% 70%, rgba(191,221,180,0.6), transparent); }
+.hero-card > * { position: relative; }
+.tint-gap { background: var(--tint-gap); } .tint-unknown { background: var(--tint-unknown); } .tint-ready { background: var(--tint-ready); } .tint-warm { background: var(--tint-warm); }
+.solid .glass, .solid .card, .solid .tabbar, .solid .topbar, .solid .pane { background: var(--solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.solid .tint-gap, .solid .skill.tint-gap { background: #FBE6D8 !important; } .solid .tint-unknown { background: #E4EFF4 !important; } .solid .tint-ready { background: #E2EFDC !important; } .solid .tint-warm { background: #FCEFE5 !important; }
+.solid .hero-card::before { display: none; }
+@media (prefers-reduced-transparency: reduce) { .glass, .card, .tabbar, .topbar, .pane { background: var(--solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } }
+
+/* ===== Layout ===== */
+.container { max-width: 1080px; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+.container.wide { max-width: 1320px; }
+.container.narrow { max-width: 680px; }
+.phone .container { padding: .9rem 1rem 7.5rem; }
+.stack > * + * { margin-top: 1rem; }
+.stack-sm > * + * { margin-top: .5rem; }
+.phone .stack > * + * { margin-top: .8rem; }
+.row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.spread { justify-content: space-between; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; }
+.phone .grid2, .phone .grid3 { grid-template-columns: minmax(0,1fr); gap: .75rem; }
+.muted { color: var(--ink-2); } .small { font-size: .875rem; } .tiny { font-size: .8rem; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.page-head h1 { margin: 0; }
+.page-head p { margin: .35rem 0 0; color: var(--ink-2); }
+.sec-title { font-size: 1.08rem; margin: 1.6rem 0 .7rem; }
+.phone .sec-title { margin-top: 1.3rem; }
+.back { display: inline-flex; align-items: center; gap: .2rem; color: var(--ink-2); text-decoration: none; font-weight: 500; min-height: 44px; padding-right: .5rem; margin: -.3rem 0 .2rem -.3rem; border-radius: 12px; background: none; border: 0; }
+.back:hover { color: var(--ink); background: none; }
+
+/* ===== Top bar + tab bar ===== */
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .65rem 1.5rem; background: rgba(244,247,243,0.72); border-bottom: 1px solid var(--line); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
+.phone .topbar { padding: .5rem 1rem; }
+.brand { font-weight: 600; font-size: 1.12rem; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; }
+.brand-mark { width: 26px; height: 26px; border-radius: 9px; background: linear-gradient(150deg, var(--peach) 0%, var(--sky) 55%, var(--sage) 100%); border: 1px solid var(--glass-edge); }
+.topnav { display: flex; gap: .25rem; }
+.topnav a { text-decoration: none; color: var(--ink-2); font-weight: 500; padding: .55rem 1rem; border-radius: var(--r-pill); min-height: 44px; display: inline-flex; align-items: center; }
+.topnav a:hover { color: var(--ink); }
+.topnav a[aria-current="page"] { background: var(--glass-strong); color: var(--ink); box-shadow: inset 0 0 0 1px var(--glass-edge), 0 2px 8px rgba(40,60,50,.06); }
+.phone .topnav { display: none; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; display: inline-grid; place-items: center; font-weight: 600; color: var(--ink); background: linear-gradient(140deg, var(--peach), var(--sage)); border: 3px solid var(--glass-edge); text-decoration: none; flex: none; }
+.avatar.lg { width: 48px; height: 48px; }
+.tabbar { display: none; }
+.phone .tabbar { display: grid; grid-template-columns: repeat(3, 1fr); position: absolute; z-index: 30; left: 12px; right: 12px; bottom: 14px; padding: 6px; border-radius: 24px; background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 12px 30px rgba(40,60,50,0.16); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
+.tabbar a { display: grid; justify-items: center; gap: 2px; padding: 8px 0 6px; border-radius: 18px; font-size: .78rem; text-decoration: none; color: var(--ink-2); font-weight: 500; min-height: 52px; }
+.tabbar a[aria-current="page"] { background: var(--ink); color: #fff; }
+.tabbar a[aria-current="page"] svg { stroke: #fff; }
+
+/* ===== Buttons ===== */
+button, .btn { font: inherit; font-weight: 500; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 44px; padding: .6rem 1.05rem; border-radius: var(--r-md); border: 1px solid var(--glass-edge); background: var(--glass-strong); text-decoration: none; transition: background-color .15s ease, transform .1s ease; text-align: center; line-height: 1.25; }
+button:hover:not(:disabled), .btn:hover { background: var(--solid); }
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.primary { background: var(--orange) !important; border-color: var(--orange); color: var(--ink) !important; font-weight: 600; }
+.primary:hover:not(:disabled) { background: var(--orange-press) !important; border-color: var(--orange-press); }
+.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+.dark:hover:not(:disabled) { background: #2C3431; }
+.dark svg { stroke: #fff; }
+.ghost { background: transparent; border-color: transparent; box-shadow: none; }
+.ghost:hover:not(:disabled) { background: rgba(255,255,255,0.55); }
+.danger { color: #9B2C2C; }
+.block { width: 100%; }
+.lg { padding: .95rem 1.2rem; font-size: 1.02rem; min-height: 52px; }
+.icon-btn { width: 44px; height: 44px; padding: 0; border-radius: 50%; flex: none; }
+.arrow-tile { width: 38px; height: 38px; flex: none; display: inline-grid; place-items: center; border-radius: var(--r-sm); border: 1px solid var(--glass-edge); background: rgba(255,255,255,0.65); }
+.segmented { display: flex; gap: 6px; }
+.segmented button { flex: 1; background: rgba(255,255,255,0.55); padding-left: .4rem; padding-right: .4rem; }
+.segmented button[aria-pressed="true"], .segmented button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* ===== Forms ===== */
+input[type=text], input[type=email], input[type=password], textarea, select { font: inherit; width: 100%; color: var(--ink); padding: .7rem .85rem; min-height: 44px; border-radius: var(--r-md); border: 1px solid rgba(29,35,33,0.14); background: rgba(255,255,255,0.85); }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(29,35,33,0.12); }
+textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+label { display: block; font-size: .86rem; color: var(--ink-2); margin-bottom: .3rem; }
+.check { display: flex; gap: .65rem; align-items: flex-start; font-size: .92rem; color: var(--ink); cursor: pointer; min-height: 44px; padding: .4rem 0; margin: 0; }
+.check input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--ink); flex: none; }
+.ask-bar { display: flex; align-items: center; gap: .6rem; padding: .85rem 1rem; border-radius: 20px; color: var(--ink-2); text-decoration: none; width: 100%; justify-content: flex-start; font-weight: 400; min-height: 52px; }
+
+/* ===== Badges, notices ===== */
+.badge { display: inline-flex; align-items: center; gap: .3rem; font-size: .78rem; font-weight: 600; padding: .22rem .62rem; border-radius: var(--r-pill); background: rgba(255,255,255,0.85); color: var(--ink); white-space: nowrap; border: 1px solid var(--glass-edge); line-height: 1.35; }
+.badge.gap { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+.badge.warn { background: var(--peach); border-color: var(--peach); }
+.badge.ready, .badge.good { background: var(--sage); border-color: var(--sage); }
+.badge.info { background: var(--sky); border-color: var(--sky); }
+.badge.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+.notice { padding: .75rem .95rem; border-radius: var(--r-md); font-size: .92rem; color: var(--ink); background: var(--glass-strong); border: 1px solid var(--glass-edge); }
+.notice.warn { background: var(--tint-warm); } .notice.info { background: var(--tint-unknown); } .notice.good { background: var(--tint-ready); }
+.notice.bad { background: var(--tint-gap); border-left: 3px solid var(--orange); }
+
+/* ===== Icons ===== */
+.icon-well { width: 52px; height: 52px; flex: none; display: inline-grid; place-items: center; border-radius: var(--r-md); background: linear-gradient(150deg, var(--peach) 0%, var(--sky) 55%, var(--sage) 100%); }
+.icon-well.sm { width: 40px; height: 40px; border-radius: var(--r-sm); background: rgba(255,255,255,0.72); }
+svg.icon { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ===== Lists, tiles, progress ===== */
+.list { list-style: none; padding: 0; margin: 0; }
+.list > li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .8rem 0; border-top: 1px solid var(--line); }
+.list > li:first-child { border-top: 0; }
+.tile-link { display: flex; flex-direction: column; gap: .35rem; padding: 1rem; border-radius: var(--r-lg); text-decoration: none; color: var(--ink); min-height: 138px; text-align: left; align-items: stretch; justify-content: flex-start; font-weight: 400; width: 100%; }
+.tile-link .tile-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: auto; min-height: 40px; }
+.tile-link strong { font-weight: 500; font-size: 1.02rem; margin-top: .9rem; display: block; line-height: 1.25; }
+.tile-link .sub { color: var(--ink-2); font-size: .84rem; line-height: 1.35; }
+.week-dots { display: flex; gap: 6px; }
+.week-dots span { display: grid; justify-items: center; gap: 3px; font-size: .68rem; color: var(--ink-2); }
+.week-dots i { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--ink-3); display: block; }
+.week-dots i.on { background: var(--ink); border-color: var(--ink); }
+.week-dots i.today { border-color: var(--orange); border-width: 2.5px; }
+.week-dots i.on.today { box-shadow: 0 0 0 2.5px var(--orange); border-color: var(--ink); }
+.meter { height: 6px; background: rgba(29,35,33,0.08); border-radius: 99px; overflow: hidden; }
+.meter > div { height: 100%; background: var(--ink); border-radius: 99px; transition: width .3s ease; }
+.steps4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 120px; }
+.steps4 span { height: 6px; border-radius: 4px; background: rgba(29,35,33,0.1); }
+.steps4 span.f { background: var(--ink); }
+.skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0.9), rgba(255,255,255,0.4)); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: var(--r-md); }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.empty { text-align: center; padding: 2rem 1rem; color: var(--ink-2); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.divider { display: flex; align-items: center; gap: .75rem; color: var(--ink-2); font-size: .85rem; margin: .9rem 0; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* ===== Screen components ===== */
+/* Today */
+.who { display: flex; align-items: center; gap: 12px; }
+.who .hi { font-size: 1.15rem; margin: 0; letter-spacing: -0.01em; }
+.who strong { display: block; font-weight: 500; font-size: 1.1rem; line-height: 1.2; }
+.who .sub { color: var(--ink-2); font-size: .86rem; }
+.who .icon-btn { margin-left: auto; background: var(--glass); }
+.hero-top { display: flex; gap: 14px; align-items: center; }
+.hero-top h2 { margin: 0; font-size: 1.4rem; }
+.hero-top p { margin: 3px 0 0; color: var(--ink-2); font-size: .9rem; line-height: 1.35; }
+.times { margin: 16px 0 12px; }
+.plan-steps { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 6px; }
+.plan-steps li { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-radius: 14px; background: rgba(255,255,255,0.6); border: 1px solid var(--glass-edge); font-size: .9rem; line-height: 1.3; }
+.plan-steps .n { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-size: .75rem; font-weight: 600; flex: none; }
+.plan-steps .t { flex: 1; min-width: 0; }
+.plan-steps .t small { display: block; color: var(--ink-2); font-size: .78rem; }
+.plan-steps .m { color: var(--ink-2); font-size: .8rem; white-space: nowrap; }
+.pair { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.week { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.week strong { font-weight: 500; display: block; white-space: nowrap; }
+.phone .week-dots { gap: 4px; }
+.phone .week-dots i { width: 16px; height: 16px; }
+.phone .week { padding: 12px 14px; }
+.win { display: flex; gap: 12px; align-items: center; padding: 14px 16px; text-align: left; width: 100%; font-weight: 400; justify-content: flex-start; border-radius: var(--r-lg); }
+.win .grow { flex: 1; min-width: 0; }
+.win strong { font-weight: 500; display: block; line-height: 1.3; }
+.link-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; width: 100%; text-align: left; font-weight: 500; border-radius: var(--r-lg); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { border-radius: var(--r-pill); padding: .5rem .95rem; background: rgba(255,255,255,0.7); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.choice { display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; justify-content: flex-start; padding: .8rem 1rem; font-weight: 400; background: rgba(255,255,255,0.7); }
+.choice strong { font-weight: 500; display: block; }
+.choice[aria-pressed="true"] { background: var(--solid); box-shadow: inset 0 0 0 2px var(--ink); }
+.choice .grow { flex: 1; }
+
+/* Desktop Today layout */
+.today-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.phone .today-grid { grid-template-columns: minmax(0,1fr); gap: .8rem; }
+
+/* Skill cards (Aura) */
+.skill { padding: 18px; border-radius: 24px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--glass-edge); text-align: left; width: 100%; font-weight: 400; align-items: stretch; justify-content: flex-start; box-shadow: var(--shadow); color: var(--ink); }
+.phone .skill { padding: 16px; }
+.skill .top { display: flex; flex-direction: column-reverse; align-items: flex-start; gap: 10px; }
+.skill .name { font-weight: 500; font-size: 1.1rem; line-height: 1.25; }
+.skill p { margin: 0; font-size: .92rem; text-wrap: pretty; }
+.skill .meta { color: var(--ink-2); font-size: .86rem; text-wrap: pretty; }
+.skill .bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 6px; font-weight: 500; font-size: .93rem; gap: 10px; }
+.skill.tint-gap:hover, .skill.tint-gap:hover:not(:disabled) { background: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(247,205,176,0.7)); }
+.skill.tint-unknown:hover:not(:disabled) { background: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(210,229,238,0.85)); }
+.skill.tint-ready:hover:not(:disabled) { background: linear-gradient(160deg, rgba(255,255,255,0.9), rgba(191,221,180,0.75)); }
+.skill-wrap { border-radius: 24px; display: flex; flex-direction: column; }
+.skill-wrap.open { grid-column: 1 / -1; }
+.skill-wrap .skill { height: 100%; }
+.skill-wrap.open .skill { border-bottom-left-radius: 0; border-bottom-right-radius: 0; height: auto; }
+.skill-detail { padding: 16px 18px 18px; border-radius: 0 0 24px 24px; background: rgba(255,255,255,0.82); border: 1px solid var(--glass-edge); border-top: 1px solid var(--line); }
+.solid .skill-detail { background: #fff; }
+.kv { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: .45rem 1rem; font-size: .92rem; margin: 0 0 1rem; }
+.kv dt { color: var(--ink-2); } .kv dd { margin: 0; }
+.phone .kv { grid-template-columns: minmax(0,1fr); gap: .1rem; } .phone .kv dd { margin-bottom: .5rem; }
+.factor { display: grid; grid-template-columns: 150px minmax(0,1fr) 60px; gap: .75rem; align-items: center; font-size: .88rem; padding: .25rem 0; }
+.phone .factor { grid-template-columns: minmax(0,1fr) auto; gap: .2rem .6rem; padding: .35rem 0; }
+.phone .factor > span:first-child { grid-column: 1 / -1; }
+.factor .v { white-space: nowrap; }
+.factor .meter { height: 8px; }
+.factor .v { color: var(--ink-2); text-align: right; }
+.skel-card { height: 150px; border-radius: 24px; }
+
+/* Welcome */
+.hero-head { text-align: left; max-width: 720px; }
+.hero-head h1 { font-size: 2.6rem; letter-spacing: -0.025em; line-height: 1.08; }
+.phone .hero-head h1 { font-size: 1.9rem; }
+.hero-head p { font-size: 1.08rem; color: var(--ink-2); }
+.pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: .4rem .8rem; border-radius: var(--r-pill); background: var(--glass); border: 1px solid var(--glass-edge); font-size: .85rem; }
+.locked { display: flex; gap: 12px; align-items: center; padding: 16px 18px; border-radius: 24px; border: 1.5px dashed rgba(29,35,33,0.2); background: rgba(255,255,255,0.4); color: var(--ink-2); }
+.locked .lines { flex: 1; display: grid; gap: 6px; } .locked .lines i { display: block; height: 8px; border-radius: 4px; background: rgba(29,35,33,0.08); }
+
+/* Session */
+.progress-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: .5rem; font-size: .92rem; color: var(--ink-2); }
+.step-card { padding: 1.6rem; min-height: 280px; display: flex; flex-direction: column; gap: .8rem; }
+.phone .step-card { padding: 1.2rem; min-height: 300px; }
+.step-card h2 { font-size: 1.6rem; margin: 0; }
+.phone .step-card h2 { font-size: 1.4rem; }
+.step-actions { margin-top: auto; display: grid; gap: .6rem; }
+.step-actions .two { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.step-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.step-list li { display: flex; align-items: center; gap: 10px; font-size: .9rem; padding: 8px 4px; }
+.step-list .st { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--ink-3); flex: none; }
+.step-list .st.done { background: var(--ink); border-color: var(--ink); } .step-list .st.done svg { stroke: #fff; }
+.step-list .st.now { border-color: var(--orange); border-width: 2.5px; }
+.celebrate { text-align: center; padding: 2rem 1.4rem; }
+.burst { width: 92px; height: 92px; margin: 0 auto 1rem; border-radius: 30px; display: grid; place-items: center; background: linear-gradient(150deg, var(--peach) 0%, var(--sky) 55%, var(--sage) 100%); animation: pop .7s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes pop { from { transform: scale(.4) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.win-list { list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 8px; text-align: left; }
+.win-list li { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; }
+
+/* Quiz */
+.q-banner { display: flex; align-items: center; gap: .6rem; }
+.q-card { padding: 1.5rem; }
+.phone .q-card { padding: 1.1rem; }
+.q-card h2 { font-size: 1.3rem; line-height: 1.3; }
+.option { display: flex; gap: .75rem; align-items: center; padding: .8rem .95rem; border-radius: var(--r-md); margin-bottom: .5rem; background: rgba(255,255,255,0.8); border: 1px solid rgba(29,35,33,0.12); width: 100%; text-align: left; justify-content: flex-start; font-weight: 400; min-height: 52px; }
+.option .key { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: rgba(29,35,33,0.06); font-weight: 600; font-size: .85rem; flex: none; }
+.option .grow { flex: 1; }
+.option[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--ink); background: #fff; }
+.option.correct { background: var(--tint-ready); border-color: var(--sage); box-shadow: none; }
+.option.wrong { background: var(--tint-gap); border-color: var(--orange); box-shadow: none; }
+.option:disabled { opacity: 1; cursor: default; }
+.feedback { margin-top: .85rem; padding: 1rem 1.1rem; border-radius: var(--r-md); background: rgba(255,255,255,0.88); border: 1px solid var(--glass-edge); }
+.feedback:focus { outline: none; box-shadow: 0 0 0 3px rgba(29,35,33,0.14); }
+.criteria { list-style: none; padding: 0; margin: .5rem 0 0; font-size: .92rem; display: grid; gap: .35rem; }
+.criteria li { display: flex; gap: .55rem; align-items: flex-start; }
+.criteria .mk { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: .8rem; font-weight: 700; margin-top: 1px; }
+.mk.y { background: var(--sage); } .mk.p { background: var(--peach); } .mk.n { background: rgba(29,35,33,0.08); }
+.qdots { display: flex; gap: 6px; justify-content: center; }
+.qdots button { width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 50%; background: transparent; border: 0; display: grid; place-items: center; }
+.qdots button i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--ink-3); display: block; }
+.qdots button.ans i { background: var(--ink); border-color: var(--ink); }
+.qdots button[aria-current="step"] i { border-color: var(--orange); border-width: 2.5px; width: 18px; height: 18px; }
+.qdots button.ans[aria-current="step"] i { box-shadow: 0 0 0 2.5px var(--orange); border-color: var(--ink); width: 14px; height: 14px; }
+.score { font-size: 3rem; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
+
+/* Prep */
+.prep-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; width: 100%; text-align: left; justify-content: flex-start; font-weight: 400; border-radius: var(--r-lg); }
+.prep-row .grow { flex: 1; min-width: 0; }
+.prep-row strong { font-weight: 500; display: block; line-height: 1.3; }
+.ready-card { padding: 1rem 1.1rem; }
+.ready-card .lbl { font-size: .86rem; color: var(--ink-2); }
+.ready-card .val { font-weight: 500; font-size: 1.05rem; margin: .15rem 0 .55rem; }
+.plan-list { list-style: none; padding: 0; margin: 0; }
+.plan-list li { display: flex; gap: 12px; align-items: center; padding: .75rem 0; border-top: 1px solid var(--line); }
+.plan-list li:first-child { border-top: 0; }
+.plan-list .day { width: 52px; flex: none; font-size: .82rem; color: var(--ink-2); }
+.plan-list .grow { flex: 1; min-width: 0; }
+
+/* Interview */
+.mock-q { padding: 1.4rem; }
+.phone .mock-q { padding: 1.1rem; }
+.mock-q h2 { font-size: 1.3rem; line-height: 1.3; }
+.star { display: flex; gap: 6px; flex-wrap: wrap; }
+.star span { padding: .3rem .7rem; border-radius: var(--r-pill); font-size: .82rem; font-weight: 500; border: 1px solid var(--glass-edge); }
+.star .y { background: var(--sage); } .star .p { background: var(--peach); } .star .n { background: rgba(255,255,255,0.8); border-style: dashed; border-color: rgba(29,35,33,.25); }
+.followup { margin-left: 1.6rem; border-left: 3px solid var(--sky); padding-left: 1rem; }
+.phone .followup { margin-left: .5rem; padding-left: .75rem; }
+
+/* Library */
+.dropzone { border: 1.5px dashed rgba(29,35,33,0.25); border-radius: var(--r-lg); padding: 1.5rem; text-align: center; color: var(--ink-2); background: rgba(255,255,255,0.45); display: grid; gap: .6rem; justify-items: center; }
+.doc-tile { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: var(--r-lg); text-align: left; width: 100%; font-weight: 400; align-items: stretch; justify-content: flex-start; min-height: 170px; color: var(--ink); }
+.doc-tile .tile-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.doc-tile strong { font-weight: 500; font-size: 1.02rem; line-height: 1.3; display: block; }
+.doc-tile .sub { color: var(--ink-2); font-size: .85rem; line-height: 1.4; }
+.doc-tile .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cover { width: 42px; height: 54px; border-radius: 8px; flex: none; background: linear-gradient(160deg, var(--sky), var(--sage)); border: 1px solid var(--glass-edge); display: grid; place-items: center; }
+
+/* Document workspace */
+.workspace { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 1rem; height: calc(100vh - 230px); min-height: 520px; }
+.phone .workspace { grid-template-columns: minmax(0,1fr); height: auto; min-height: 0; }
+.pane { display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: var(--r-lg); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+.pane-head { padding: .7rem 1rem; border-bottom: 1px solid var(--line); display: flex; gap: .5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; min-height: 56px; }
+.pane-body { flex: 1; overflow: auto; padding: 1rem 1.2rem; background: rgba(255,255,255,0.55); scroll-behavior: smooth; }
+.phone .pane-body { max-height: 520px; min-height: 380px; }
+.page-text p { font-size: .98rem; line-height: 1.75; margin-bottom: .9rem; }
+.page-no { font-size: .8rem; color: var(--ink-2); margin: 1.2rem 0 .3rem; display: flex; align-items: center; gap: .6rem; }
+.page-no::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.page-text mark.hl { background: var(--peach); box-shadow: 0 0 0 3px rgba(242,98,26,.35); transition: box-shadow .4s; }
+.page-text mark { background: transparent; padding: 0; }
+.page-text mark.hl, .page-text mark.on { background: rgba(247,205,176,0.95); padding: 0 .15rem; }
+.msg { margin-bottom: 1rem; }
+.msg.user { text-align: right; }
+.msg.user .bubble { background: var(--ink); color: #fff; display: inline-block; text-align: left; border-radius: 18px 18px 6px 18px; }
+.bubble { padding: .75rem .95rem; border-radius: 18px 18px 18px 6px; background: var(--solid); border: 1px solid var(--glass-edge); max-width: 100%; font-size: .94rem; }
+.bubble p:last-child { margin-bottom: 0; }
+.cite { font-size: .76rem; font-weight: 600; color: var(--ink); background: var(--peach); border: 0; padding: .1rem .45rem; border-radius: 6px; margin: 0 .1rem; cursor: pointer; min-height: 0; vertical-align: baseline; display: inline; }
+.cite:hover:not(:disabled) { background: #F3B98F; }
+.cite-item { font-size: .86rem; border: 1px solid var(--glass-edge); border-radius: var(--r-md); padding: .55rem .75rem; background: rgba(255,255,255,0.85); text-align: left; display: block; width: 100%; font-weight: 400; margin-top: .45rem; }
+.cite-item q { color: var(--ink-2); }
+.starter { display: grid; gap: .5rem; }
+.starter button { justify-content: flex-start; text-align: left; font-weight: 400; background: rgba(255,255,255,0.8); }
+.chat-form { display: flex; gap: .5rem; padding: .75rem; border-top: 1px solid var(--line); background: rgba(255,255,255,0.6); }
+.chat-form input { flex: 1; }
+
+/* Progress */
+.concept-row { display: grid; grid-template-columns: minmax(0,1fr) 130px auto; gap: .9rem; align-items: center; padding: .8rem 0; border-top: 1px solid var(--line); }
+.concept-row:first-child { border-top: 0; }
+.phone .concept-row { grid-template-columns: minmax(0,1fr) auto; }
+.phone .concept-row .steps4 { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; }
+.concept-row strong { font-weight: 500; display: block; }
+
+/* Settings */
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 0; border-top: 1px solid var(--line); }
+.set-row:first-child { border-top: 0; }
+.set-row .grow { flex: 1; min-width: 0; }
+.set-row strong { font-weight: 500; display: block; }
+.switch { width: 56px; height: 34px; min-height: 34px; padding: 3px; border-radius: 99px; background: rgba(29,35,33,0.16); border: 0; justify-content: flex-start; position: relative; }
+.switch::after { content: ""; width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .15s; }
+.switch[aria-pressed="true"] { background: var(--ink); }
+.switch[aria-pressed="true"]::after { transform: translateX(22px); }
+.switch:hover:not(:disabled) { background: rgba(29,35,33,0.24); }
+.switch[aria-pressed="true"]:hover:not(:disabled) { background: #2C3431; }
+.switch-hit { padding: 5px; margin: -5px; border-radius: 99px; }
+
+/* Auth */
+.auth-wrap { min-height: calc(100vh - 160px); display: grid; place-items: center; padding: 1.5rem 1rem 3rem; }
+.phone .auth-wrap { min-height: 0; padding-top: 1.2rem; }
+.auth-card { width: 100%; max-width: 440px; padding: 1.6rem; }
+.phone .auth-card { padding: 1.25rem; }
+
+/* Onboarding */
+.ob-dots { display: flex; gap: 6px; }
+.ob-dots i { height: 6px; width: 28px; border-radius: 4px; background: rgba(29,35,33,0.12); display: block; }
+.ob-dots i.on { background: var(--ink); }
+.target-picker { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 6px; }
+.target-picker button { padding: 0; min-height: 52px; font-size: 1.05rem; background: rgba(255,255,255,0.65); }
+.target-picker button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Toast */
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: .7rem 1.1rem; border-radius: 14px; z-index: 200; font-size: .92rem; box-shadow: 0 10px 30px rgba(0,0,0,.25); max-width: 90vw; }
+.stage.phone .toast { position: absolute; bottom: 92px; white-space: normal; width: max-content; max-width: 330px; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .burst { animation: none !important; }
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+@media (max-width: 760px) {
+  .stage.desk .grid2, .stage.desk .grid3, .stage.desk .today-grid, .stage.desk .workspace { grid-template-columns: minmax(0,1fr); }
+  .stage.desk .workspace { height: auto; }
+  .stage.desk .topnav { display: none; }
+  .stage.desk .tabbar { display: grid; grid-template-columns: repeat(3,1fr); position: fixed; z-index: 30; left: 12px; right: 12px; bottom: 12px; padding: 6px; border-radius: 24px; background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: 0 12px 30px rgba(40,60,50,0.16); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
+  .stage.desk .container { padding-bottom: 7.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="rb" role="region" aria-label="Review controls (not part of the app)">
+  <div class="rb-row">
+    <span class="rb-title">Mindmesh preview</span>
+    <nav class="rb-screens" id="rb-screens" aria-label="Jump to screen"></nav>
+  </div>
+  <div class="rb-row">
+    <span class="grp" role="group" aria-label="Width">
+      <button type="button" id="rb-phone" aria-pressed="false">Phone</button>
+      <button type="button" id="rb-desk" aria-pressed="true">Desktop</button>
+    </span>
+    <button type="button" id="rb-solid" aria-pressed="false">Reduce transparency</button>
+    <button type="button" id="rb-debrief" aria-pressed="false">Show debrief</button>
+    <button type="button" id="rb-reset">Reset sample data</button>
+    <span class="note">Static prototype. Sample data, nothing is saved.</span>
+  </div>
+</div>
+<div class="stage desk" id="stage">
+  <div class="device" id="device">
+    <div class="statusbar" aria-hidden="true"><span>9:41</span><span class="notch"></span><span class="sig"><i style="height:5px"></i><i style="height:8px"></i><i style="height:11px"></i><i style="height:13px;width:22px;border-radius:4px;border:1.5px solid #1D2321;background:transparent"></i></span></div>
+    <div class="scroll" id="scroll"><div class="app" id="app"></div></div>
+    <div id="toast-host" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+"use strict";
+/* ================= Icons (same paths as web/src/components/Icon.tsx) ================= */
+const P = {
+  today: "M4 7h16M4 7v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7M4 7l1-3h14l1 3M9 12h6",
+  prep: "M4 20V9l8-5 8 5v11M9 20v-6h6v6",
+  library: "M5 4h10l4 4v12H5zM15 4v4h4M8 13h8M8 17h5",
+  arrow: "M7 17 17 7M9 7h8v8",
+  back: "M15 6l-6 6 6 6",
+  bell: "M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0",
+  sparkle: "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z",
+  mic: "M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zM5 11a7 7 0 0 0 14 0M12 18v3",
+  upload: "M12 16V4M7 9l5-5 5 5M5 20h14",
+  check: "M5 12.5l4.5 4.5L19 7",
+  close: "M6 6l12 12M18 6 6 18",
+  search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
+  clock: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
+  chart: "M4 20V10M10 20V4M16 20v-7M22 20H2",
+  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0",
+  plus: "M12 5v14M5 12h14",
+  flag: "M5 21V4h11l-1.5 4L16 12H5",
+  quote: "M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6",
+  target: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01",
+  book: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 5v16M8 7h7",
+  lock: "M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3",
+  down: "M12 4v12M7 11l5 5 5-5M5 20h14",
+  pen: "M4 20h4L19 9l-4-4L4 16zM14 6l4 4",
+  chev: "M9 6l6 6-6 6",
+  shield: "M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"
+};
+function ic(n, s, cls) { return '<svg class="icon ' + (cls || "") + '" width="' + (s || 20) + '" height="' + (s || 20) + '" viewBox="0 0 24 24" aria-hidden="true"><path d="' + P[n] + '"/></svg>'; }
+const ARROW = '<span class="arrow-tile" aria-hidden="true">' + ic("arrow", 18) + "</span>";
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+const reduceMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ================= Sample data ================= */
+const JOB_TEXT = "Senior Program Manager, Supply Chain\nAmazon, Seattle\n\nYou will own risk registers across multi-site launches and keep programs on track when plans change. You will influence senior leaders without direct authority, and optimise inventory across the regional network. You will build business cases and track working capital impact for each program.\n\n7+ years in program management or supply chain operations. Strong written communication.";
+const RESUME_TEXT = "Pouravi Jundre\nSupply Chain Program Lead\n\n- Cut safety stock 18% across 4 distribution centres by redesigning reorder points\n- Aligned 6 regional leads on a single S&OP calendar\n- Built the cost model for a $4M DC automation business case\n- Led a 14-person cross-functional team through a WMS migration at 3 sites";
+
+const SKILLS = [
+  { id: "risk", name: "Program risk management", label: "Critical gap", cls: "gap", tint: "tint-gap",
+    line: "Not on your resume yet.", job: "own risk registers across multi-site launches", resume: null,
+    meta: "The role asks you to own risk registers across launches.", next: "Write one true story",
+    importance: "Critical. The job mentions risk four times.", evidence: "Nothing on your resume shows this yet.",
+    assessed: "We haven't seen an example of you running a risk register or a mitigation plan. One true story would change this.",
+    factors: [["Matters for the job", 95, "Very high"], ["Size of the gap", 90, "Large"], ["Likely to be asked", 85, "Very likely"], ["Time to close", 40, "About 1 hour"]] },
+  { id: "fin", name: "Financial acumen", label: "Gap", cls: "gap", tint: "tint-gap",
+    line: "You missed 3 of 4 working-capital questions.", job: "track working capital impact for each program", resume: "Built the cost model for a $4M DC automation business case",
+    meta: "High importance for this role.", next: "Learn it in 20 min",
+    importance: "High. Named in the business case line of the job.", evidence: "Your cost model example is close, but it doesn't show working capital.",
+    assessed: "You got 1 of 4 working-capital questions right on Tuesday. The cash conversion cycle was the main miss.",
+    factors: [["Matters for the job", 75, "High"], ["Size of the gap", 70, "Medium"], ["Likely to be asked", 60, "Likely"], ["Time to close", 65, "About 20 min"]] },
+  { id: "stake", name: "Stakeholder influence", label: "Not enough answers yet", cls: "info", tint: "tint-unknown",
+    line: null, job: "influence senior leaders without direct authority", resume: "Aligned 6 regional leads on a single S&OP calendar",
+    meta: "One good resume example.", next: "Rehearse with a follow-up",
+    importance: "High. Interviewers often test this with a follow-up question.", evidence: "One strong example on your resume.",
+    assessed: "Your resume has a good example, but you haven't answered a question on it yet, so we can't say how well you tell it.",
+    factors: [["Matters for the job", 70, "High"], ["Size of the gap", 45, "Unknown"], ["Likely to be asked", 80, "Very likely"], ["Time to close", 75, "About 10 min"]] },
+  { id: "inv", name: "Inventory optimisation", label: "Interview ready", cls: "ready", tint: "tint-ready",
+    line: null, job: "optimise inventory across the regional network", resume: "Cut safety stock 18% across 4 distribution centres",
+    meta: "Proven on your resume and in 5 of 6 answers.", next: "Keep it fresh",
+    importance: "High. A core part of the role.", evidence: "Strong, measurable example on your resume.",
+    assessed: "Five of your six answers covered the key points, including the trade-off between service level and stock.",
+    factors: [["Matters for the job", 80, "High"], ["Size of the gap", 10, "Closed"], ["Likely to be asked", 70, "Likely"], ["Time to close", 95, "Done"]] }
+];
+const STEPS = {
+  review: { kind: "Review", title: "Review Little's Law", detail: "Due for review: last practised 9 days ago.", min: 4, body: "Four quick questions from Factory Physics, one at a time.", go: "quiz" },
+  learn: { kind: "Learn", title: "Working capital in 8 minutes", detail: "A gap for your Amazon role: you missed 3 of 4 working-capital questions.", min: 8, body: "A short read from your Corporate Finance notes, then one check question.", go: "learn" },
+  story: { kind: "Story", title: "Write a stakeholder story", detail: "Not enough answers yet for Stakeholder influence.", min: 6, body: "Write one true example in four parts: the situation, your task, what you did, and the result.", go: "story" },
+  mock: { kind: "Mock question", title: "One mock question on program risk", detail: "Critical for your Amazon role.", min: 5, body: "Answer one interview question, then see what a good answer covers.", go: "interview" },
+  quiz: { kind: "Quiz", title: "Take a 5-question quiz on Factory Physics", detail: "Fresh practice on concepts with not enough answers yet.", min: 5, body: "Mixed questions from chapters 7 and 8.", go: "quiz" }
+};
+const PLANS = { 5: ["review"], 15: ["review", "story", "mock"], 30: ["review", "learn", "story", "mock", "quiz"] };
+const SUMMARY = { 5: "A quick Little's Law review", 15: "Little's Law, a stakeholder story and one mock question", 30: "Little's Law, working capital, a story, a mock question and a quiz" };
+
+const QUESTIONS = [
+  { type: "mcq", tag: "Multiple choice", q: "A line finishes 20 jobs an hour and holds 60 jobs in progress on average. What is the average cycle time?",
+    opts: ["3 hours", "20 minutes", "40 hours", "1,200 hours"], correct: 0,
+    why: "Little's Law: cycle time = work in progress ÷ throughput, so 60 ÷ 20 = 3 hours.", src: "Factory Physics, p. 239" },
+  { type: "mcq", tag: "Multiple choice", q: "Throughput is fixed. Which change shortens cycle time?",
+    opts: ["Release more jobs into the line", "Increase batch sizes", "Reduce work in progress", "Add a weekly review meeting"], correct: 2,
+    why: "With throughput fixed, the only way to cut cycle time is to hold less work in progress.", src: "Factory Physics, p. 239" },
+  { type: "text", tag: "Explain it", q: "In your own words, explain why cutting work in progress shortens cycle time.",
+    sample: "Little's Law says cycle time = WIP / throughput. If throughput stays the same and you hold less work in progress, each job spends less time waiting in queues, so cycle time drops.",
+    model: "Little's Law says cycle time equals work in progress divided by throughput. If the line keeps the same throughput, less work in progress means each job spends less time waiting in queues, so it gets through faster.", src: "Factory Physics, p. 239",
+    rubric: [
+      { label: "Names the link: cycle time = work in progress ÷ throughput", full: ["little", "wip / th", "wip/th", "wip / throughput", "wip/throughput", "ct = wip", "wip = th", "divided by throughput", "times cycle time", "× cycle"], part: ["wip", "work in progress", "work in process", "throughput"] },
+      { label: "Says throughput stays the same", full: ["same throughput", "throughput stays", "throughput is fixed", "fixed throughput", "constant throughput", "throughput constant", "throughput doesn't change", "throughput does not change", "same rate", "same output"], part: ["throughput", "rate", "capacity"] },
+      { label: "Explains that jobs spend less time waiting", full: ["queue", "waiting", "wait less", "less time wait"], part: ["wait", "line up", "sits", "idle", "backlog"] }
+    ] },
+  { type: "text", tag: "Apply it", q: "Your Seattle DC holds 12,000 units in progress and ships 1,500 units a day. Leadership wants a 5-day cycle time. What would you change, and by how much?",
+    sample: "Today cycle time is 12,000 / 1,500 = 8 days. For 5 days at the same 1,500 a day, WIP needs to be 7,500, so cut it by 4,500 units by capping how much we release into the DC each day.",
+    model: "Today's cycle time is 12,000 ÷ 1,500 = 8 days. To reach 5 days at the same 1,500 units a day, work in progress has to fall to 7,500 units. Cap releases into the DC (a WIP limit) until it gets there, and watch that shipments stay at 1,500 a day.", src: "Factory Physics, p. 240",
+    rubric: [
+      { label: "Works out today's cycle time: 8 days", full: ["8 days", "eight days", "8 day", "= 8"], part: ["8"] },
+      { label: "Finds the target: 7,500 units in progress", full: ["7,500", "7500"], part: ["4,500", "4500"] },
+      { label: "Suggests a way to hold less in progress", full: ["cap", "limit", "conwip", "release less", "releasing less", "kanban"], part: ["reduce", "cut", "lower"] },
+      { label: "Keeps shipments at 1,500 a day", full: ["1,500 a day", "1500 a day", "1,500/day", "1500/day", "same 1,500", "same 1500", "throughput"], part: ["1,500", "1500", "ship"] }
+    ] }
+];
+
+const READER = [
+  { page: 238, paras: ["Every production line can be described by three numbers. Throughput (TH) is the average rate at which good parts leave the line. Work in process (WIP) is the inventory between the start and end points. Cycle time (CT) is the average time a job spends on the line, from release to completion."] },
+  { page: 239, paras: ["The relationship between these three measures is so basic that it holds for any line in steady state, regardless of its routing or product mix. <mark data-q=\"ll\">Little's Law states that, over the long run, WIP = TH × CT: average work in process equals throughput multiplied by cycle time.</mark>",
+    "The law has a direct consequence for managers. <mark data-q=\"ll2\">For a line with fixed throughput, the only way to reduce cycle time is to reduce work in process.</mark> Releasing more work does not make it finish faster; it only makes it wait longer."] },
+  { page: 240, paras: ["Real lines are not deterministic. Machines fail, set-ups vary and orders arrive in bunches. <mark data-q=\"var\">Variability always degrades the performance of a production system.</mark> It shows up as extra inventory, longer cycle times or lost throughput, and usually as some mix of all three.",
+    "The effect grows sharply as a station gets busier. <mark data-q=\"var2\">As utilisation approaches one, queue time grows without bound</mark>, which is why a line that runs every station near full capacity will be slow even when it looks efficient."] },
+  { page: 241, paras: ["Chapter summary. <mark data-q=\"sum\">Reducing variability and controlling the amount of work released are the two most dependable levers for shorter, more predictable cycle times.</mark> Buffers of inventory, capacity or time absorb whatever variability remains."] }
+];
+const QUOTES = { ll: [239, "Little's Law states that, over the long run, WIP = TH × CT"], ll2: [239, "the only way to reduce cycle time is to reduce work in process"], var: [240, "Variability always degrades the performance of a production system"], var2: [240, "As utilisation approaches one, queue time grows without bound"], sum: [241, "Reducing variability and controlling the amount of work released are the two most dependable levers"] };
+const STARTERS = [
+  { q: "What is Little's Law?", a: "Little's Law links three numbers on any production line: work in progress equals throughput times cycle time [ll]. So if a line finishes 20 jobs an hour and holds 60 in progress, each job takes about 3 hours.\n\nThe useful part for managers: when throughput is fixed, cutting work in progress is the only way to cut cycle time [ll2].", cites: ["ll", "ll2"] },
+  { q: "Why does variability make lines slower?", a: "Because variability always hurts performance, showing up as extra inventory, longer cycle times or lost throughput [var].\n\nIt gets much worse as stations get busier: as utilisation approaches one, queue time grows without bound [var2]. A line running every station near full capacity will be slow even if it looks efficient.", cites: ["var", "var2"] },
+  { q: "Summarise chapter 8 in 3 points", a: "1. Work in progress = throughput × cycle time, on any line in steady state [ll].\n2. Variability always degrades performance, and the damage grows as utilisation rises [var].\n3. The most dependable levers are reducing variability and controlling how much work you release [sum].", cites: ["ll", "var", "sum"] }
+];
+const DOCS0 = [
+  { id: "fp", title: "Factory Physics, 3rd ed.", sub: "Hopp and Spearman · 712 pages", status: "ready" },
+  { id: "cf", title: "Corporate Finance notes", sub: "Lecture notes · 48 pages", status: "partial" },
+  { id: "cfa", title: "CFA mock exam", sub: "PDF · uploaded Tuesday", status: "failed" }
+];
+
+/* ================= State ================= */
+function initState() {
+  return {
+    route: "today", phone: false, solid: false, showDebrief: false,
+    fromWelcome: false, authMode: "signup",
+    w: { job: JOB_TEXT, resume: RESUME_TEXT, phase: "form" },
+    ob: { step: 1, prepFor: "interview", target: 3, next: "session" },
+    minutes: 15, weekOn: [true, true, false, false, false, false, false], todayIdx: 2, target: 3,
+    deb: { outcome: null, next: null, done: false },
+    sess: null, llLevel: 1, firstStory: false, mockCount: 1,
+    quiz: { idx: 0, ans: {}, res: {}, fromSession: false, finished: false },
+    prep: { open: null, override: {} },
+    iv: { phase: "q", a1: "", a2: "", r1: null, r2: null, fromSession: false },
+    lib: { rightsAck: false, docs: DOCS0.map((d) => Object.assign({}, d)), up: null },
+    doc: { tab: "read", ttab: "ask", msgs: [], hl: null, draft: "" },
+    del: { open: false }, reminders: true, weeklyEmail: true,
+    focus: null
+  };
+}
+let S = initState();
+let timers = [];
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+/* ================= Shell ================= */
+const TAB_OF = { today: "today", session: "today", progress: "today", prep: "prep", roleprep: "prep", interview: "prep", library: "library", document: "library", quiz: "library" };
+function topbar(opts) {
+  const cur = TAB_OF[S.route];
+  const nav = [["today", "Today"], ["prep", "Prep"], ["library", "Library"]].map(([k, l]) => '<a href="#' + k + '"' + (cur === k ? ' aria-current="page"' : "") + ">" + l + "</a>").join("");
+  return '<header class="topbar' + (opts.hideTopOnPhone ? " hide-phone" : "") + '"><a class="brand" href="#today"><span class="brand-mark" aria-hidden="true"></span>Mindmesh</a>' +
+    '<nav class="topnav" aria-label="Main">' + nav + "</nav>" +
+    '<a class="avatar" href="#profile" aria-label="Profile and settings"' + (S.route === "profile" ? ' aria-current="page"' : "") + ">P</a></header>";
+}
+function tabbar() {
+  const cur = TAB_OF[S.route];
+  return '<nav class="tabbar" aria-label="Main">' + [["today", "Today"], ["prep", "Prep"], ["library", "Library"]].map(([k, l]) =>
+    '<a href="#' + k + '"' + (cur === k ? ' aria-current="page"' : "") + ">" + ic(k, 22) + "<span>" + l + "</span></a>").join("") + "</nav>";
+}
+function shell(body, opts) {
+  opts = opts || {};
+  return topbar(opts) + '<main class="container ' + (opts.width || "") + '" id="main">' + body + "</main>" + (opts.noTab ? "" : tabbar());
+}
+function publicBar(right) {
+  return '<header class="topbar"><a class="brand" href="#welcome"><span class="brand-mark" aria-hidden="true"></span>Mindmesh</a>' + (right || "") + "</header>";
+}
+function backLink(href, label, act) {
+  return act ? '<button type="button" class="back" data-act="' + act + '">' + ic("back", 18) + label + "</button>"
+    : '<a class="back" href="#' + href + '">' + ic("back", 18) + label + "</a>";
+}
+function weekDots() {
+  const names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], short = ["M", "T", "W", "T", "F", "S", "S"];
+  const done = names.filter((_, i) => S.weekOn[i]);
+  const label = (done.length ? "Practised " + done.join(" and ").replace(/ and (?=.* and )/g, ", ") : "No practice yet") + ". Today is " + names[S.todayIdx] + ".";
+  return '<span class="week-dots" role="img" aria-label="' + label + '">' + short.map((d, i) =>
+    '<span><i class="' + (S.weekOn[i] ? "on " : "") + (i === S.todayIdx ? "today" : "") + '"></i>' + d + "</span>").join("") + "</span>";
+}
+const weekCount = () => S.weekOn.filter(Boolean).length;
+function steps4(n, label) { let h = '<span class="steps4" role="img" aria-label="' + (label || "Level " + n + " of 4") + '">'; for (let i = 0; i < 4; i++) h += '<span class="' + (i < n ? "f" : "") + '"></span>'; return h + "</span>"; }
+function toast(msg) {
+  const host = $("#toast-host"); host.innerHTML = '<div class="toast" role="status">' + esc(msg) + "</div>";
+  clearTimeout(toast.t); toast.t = setTimeout(() => { host.innerHTML = ""; }, 3200);
+}
+
+/* ================= 1. Welcome ================= */
+function skillCardWelcome(s) {
+  return '<article class="skill ' + s.tint + '"><div class="top"><h3 class="name">' + s.name + '</h3><span class="badge ' + s.cls + '">' + s.label + "</span></div>" +
+    '<p><span class="muted">The job says:</span> “<mark>' + esc(s.job) + "</mark>”</p>" +
+    (s.resume ? '<p><span class="muted">Your resume shows:</span> “<mark>' + esc(s.resume) + "</mark>”</p>" : "<p>Your resume doesn't show this yet.</p>") +
+    '<span class="meta">' + s.meta + "</span></article>";
+}
+function Welcome() {
+  const w = S.w;
+  const form = '<form class="card stack" data-form="report" aria-labelledby="w-form-h">' +
+    '<h2 id="w-form-h" class="sr-only">Your job and resume</h2>' +
+    '<div class="grid2"><div><label for="w-job">The job description</label><textarea id="w-job" rows="9" data-model="w.job">' + esc(w.job) + '</textarea></div>' +
+    '<div><label for="w-resume">Your resume</label><textarea id="w-resume" rows="9" data-model="w.resume">' + esc(w.resume) + "</textarea></div></div>" +
+    '<p class="notice info small" style="margin:0">' + ic("shield", 16) + " We only use this text to build your report. It isn't used to train models, and it's kept for this visit only unless you save it. Tip: remove your phone number and home address first.</p>" +
+    '<button type="submit" class="primary lg block">Show my gap report</button></form>';
+  let body = '<div class="hero-head"><h1 tabindex="-1">See what this job needs, and what your resume already proves.</h1>' +
+    "<p>Paste a job and your resume. In about a minute you'll see the skills that matter most, the proof you already have, and the gaps to close first. No account needed.</p></div>";
+  if (w.phase === "form") body += form;
+  else if (w.phase === "loading") {
+    body += '<div class="stack" aria-live="polite" aria-busy="true"><p class="muted">Reading the job and your resume…</p><div class="skeleton" style="height:58px"></div><div class="grid2"><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div><div class="skeleton skel-card"></div></div></div>';
+  } else {
+    body += '<section class="stack" aria-live="polite" aria-labelledby="rep-h">' +
+      '<div class="page-head" style="margin:0"><div><h2 id="rep-h" tabindex="-1" style="font-size:1.6rem;margin:0">Your gap report for Senior Program Manager, Supply Chain</h2><p>Amazon. Ranked by how much each skill matters for this job and how much proof you have.</p></div>' +
+      '<span class="pill"><b>2 gaps</b>&nbsp;to close first</span></div>' +
+      '<div class="grid2">' + SKILLS.map(skillCardWelcome).join("") + "</div>" +
+      '<div class="locked">' + ic("lock", 22) + '<div class="lines"><span>+3 more skills after you sign up</span><i style="width:70%"></i><i style="width:45%"></i></div></div>' +
+      '<p class="muted small" style="margin-top:.6rem">This shows the evidence we found, not a hiring prediction.</p>' +
+      '<div class="row"><button type="button" class="primary lg" data-act="saveReport">Save this and build my plan</button><button type="button" class="ghost" data-act="editReport">' + ic("pen", 18) + "Edit job and resume</button></div></section>";
+  }
+  return publicBar('<button type="button" class="ghost" data-act="goSignin">Sign in</button>') + '<main class="container" id="main"><div class="stack">' + body + "</div></main>";
+}
+
+/* ================= 2. Sign up / Sign in ================= */
+function Signup() {
+  const up = S.authMode === "signup";
+  return publicBar() + '<div class="auth-wrap"><form class="glass auth-card stack" data-form="auth" aria-labelledby="auth-h">' +
+    '<div><h1 id="auth-h" tabindex="-1" style="font-size:1.7rem;margin:0">' + (up ? "Create your account" : "Welcome back") + '</h1><p class="muted" style="margin:.3rem 0 0">' + (up ? "Free to start. Takes under a minute." : "Sign in to pick up where you left off.") + "</p></div>" +
+    (S.fromWelcome ? '<p class="notice good" style="margin:0">' + ic("check", 16) + " Your gap report will be saved to your account.</p>" : "") +
+    '<div class="grid2" style="gap:.6rem"><button type="button" data-act="authDone">Continue with Google</button><button type="button" data-act="authDone">Continue with LinkedIn</button></div>' +
+    '<div class="divider">or with email</div>' +
+    (up ? '<div><label for="a-name">Your name</label><input id="a-name" type="text" value="Pouravi" autocomplete="name"></div>' : "") +
+    '<div><label for="a-email">Email</label><input id="a-email" type="email" value="pouravi@example.com" autocomplete="email"></div>' +
+    '<div><label for="a-pw">Password</label><input id="a-pw" type="password" value="correct-horse-battery" autocomplete="' + (up ? "new-password" : "current-password") + '">' + (up ? '<p class="tiny muted" style="margin:.3rem 0 0">At least 10 characters.</p>' : "") + "</div>" +
+    '<button type="submit" class="primary lg block">' + (up ? "Create account" : "Sign in") + "</button>" +
+    '<p class="small muted" style="margin:0;text-align:center">' + (up ? "Already have an account?" : "New to Mindmesh?") + ' <button type="button" class="ghost" data-act="authToggle" style="padding:.3rem .5rem;text-decoration:underline">' + (up ? "Sign in" : "Create an account") + "</button></p>" +
+    "</form></div>";
+}
+
+/* ================= 3. Onboarding ================= */
+function Onboarding() {
+  const o = S.ob;
+  const dots = '<span class="ob-dots" role="img" aria-label="Step ' + o.step + ' of 3"><i class="on"></i><i class="' + (o.step > 1 ? "on" : "") + '"></i><i class="' + (o.step > 2 ? "on" : "") + '"></i></span>';
+  let inner = "";
+  if (o.step === 1) {
+    inner = '<h1 tabindex="-1">What are you preparing for?</h1><p class="muted">We\'ll shape your plan and your Today screen around it.</p><div class="stack-sm" role="group" aria-label="Preparing for">' +
+      [["interview", "prep", "An interview", "Your Amazon gap report is ready to use"], ["exam", "book", "An exam", "Like the CFA or a certification"], ["learn", "sparkle", "Learning a subject", "From your own books and notes"]].map(([k, i, t, d]) =>
+        '<button type="button" class="choice" data-act="obPick" data-arg="' + k + '" aria-pressed="' + (o.prepFor === k) + '"><span class="icon-well sm">' + ic(i) + '</span><span class="grow"><strong>' + t + '</strong><span class="small muted">' + d + "</span></span>" + (o.prepFor === k ? ic("check") : "") + "</button>").join("") + "</div>";
+  } else if (o.step === 2) {
+    let b = ""; for (let n = 1; n <= 7; n++) b += '<button type="button" data-act="obTarget" data-arg="' + n + '" aria-pressed="' + (o.target === n) + '" aria-label="' + n + (n === 1 ? " session" : " sessions") + ' a week">' + n + "</button>";
+    inner = '<h1 tabindex="-1">How many sessions a week feels realistic?</h1><p class="muted">A session is 5 to 30 minutes. We count your week as done when you hit this number. No streaks, no guilt.</p>' +
+      '<div class="target-picker" role="group" aria-label="Sessions a week">' + b + '</div><p class="notice info" aria-live="polite" style="margin-top:1rem">' + o.target + (o.target === 1 ? " session" : " sessions") + " a week. " + (o.target <= 3 ? "A good pace for a busy week." : o.target <= 5 ? "Ambitious, and very doable in short sessions." : "That's most days. You can lower it any time.") + "</p>";
+  } else {
+    inner = '<h1 tabindex="-1">What would you like to do first?</h1><p class="muted">You can do the others any time from Today.</p><div class="stack-sm" role="group" aria-label="First step">' +
+      [["session", "clock", "Start today's 15 minutes", "Little's Law, a stakeholder story and one mock question"], ["upload", "upload", "Upload a document", "A textbook or notes to learn from"], ["look", "search", "Look around first", "Open Today without starting anything"]].map(([k, i, t, d]) =>
+        '<button type="button" class="choice" data-act="obNext" data-arg="' + k + '" aria-pressed="' + (o.next === k) + '"><span class="icon-well sm">' + ic(i) + '</span><span class="grow"><strong>' + t + '</strong><span class="small muted">' + d + "</span></span>" + (o.next === k ? ic("check") : "") + "</button>").join("") + "</div>";
+  }
+  return publicBar('<span class="small muted">Step ' + o.step + " of 3</span>") + '<main class="container narrow" id="main"><div class="glass card stack" style="padding:1.6rem">' + dots + inner +
+    '<div class="row spread" style="margin-top:1.2rem">' + (o.step > 1 ? '<button type="button" data-act="obBack">' + ic("back", 18) + "Back</button>" : "<span></span>") +
+    '<button type="button" class="primary lg" data-act="obContinue">' + (o.step < 3 ? "Continue" : "Finish") + "</button></div></div></main>";
+}
+
+/* ================= 4. Today ================= */
+function Debrief() {
+  const d = S.deb;
+  if (d.done) {
+    const msg = { next_round: "We've copied your Amazon prep for the next round, with the same skills and your answers so far.", learning_goal: "We've made a learning goal from your 2 remaining gaps: program risk management and financial acumen.", new_role: "Your proven skills will carry over. Paste the new job to get a fresh gap report.", none: "Got it. Your Amazon prep stays in Prep if you need it again." }[d.next];
+    return '<section class="glass card tint-ready stack-sm" aria-live="polite" tabindex="-1" id="deb"><div class="row">' + '<span class="icon-well sm">' + ic("check") + '</span><h2 style="margin:0;font-size:1.1rem">Thanks, that\'s saved</h2></div><p style="margin:0">' + msg + '</p><div class="row"><button type="button" data-act="debReset">Close</button>' + (d.next !== "none" ? '<a class="btn" href="#prep">Open Prep</a>' : "") + "</div></section>";
+  }
+  const outs = [["offer", "I got an offer"], ["next_round", "Next round"], ["rejected", "Didn't get it"], ["didnt_happen", "It didn't happen"]];
+  let h = '<section class="glass card stack-sm" aria-labelledby="deb-h" id="deb"><div class="row spread"><h2 id="deb-h" style="margin:0;font-size:1.15rem">How did your Amazon interview go?</h2><span class="small muted">Yesterday</span></div>' +
+    '<div class="chips" role="group" aria-label="Interview outcome">' + outs.map(([k, l]) => '<button type="button" data-act="debOut" data-arg="' + k + '" aria-pressed="' + (d.outcome === k) + '">' + l + "</button>").join("") + "</div>";
+  if (d.outcome) {
+    const nexts = d.outcome === "next_round" ? [["next_round", "Prepare for the next round", "Same skills, with what you've already proven"], ["learning_goal", "Turn my gaps into a learning goal", "A longer plan for the 2 gaps"], ["none", "Nothing for now", ""]]
+      : d.outcome === "offer" ? [["learning_goal", "Keep learning for the new job", "Close the 2 gaps before you start"], ["none", "Nothing for now", "Congratulations"]]
+      : [["new_role", "Prepare for another role", "Carry over what you've proven"], ["learning_goal", "Turn my gaps into a learning goal", "A longer plan for the 2 gaps"], ["none", "Nothing for now", ""]];
+    h += '<p class="small muted" style="margin:.6rem 0 .2rem">' + (d.outcome === "offer" ? "Congratulations. What next?" : d.outcome === "rejected" ? "Sorry it didn't go your way. What would help now?" : "What would help now?") + '</p><div class="stack-sm" role="group" aria-label="Next step">' +
+      nexts.map(([k, t, s]) => '<button type="button" class="choice" data-act="debNext" data-arg="' + k + '" aria-pressed="' + (d.next === k) + '"><span class="grow"><strong>' + t + "</strong>" + (s ? '<span class="small muted">' + s + "</span>" : "") + "</span>" + (d.next === k ? ic("check") : ARROW) + "</button>").join("") + "</div>" +
+      '<button type="button" class="dark block" data-act="debSave"' + (d.next ? "" : " disabled") + ">Save</button>";
+  }
+  return h + "</section>";
+}
+function Today() {
+  const m = S.minutes, plan = PLANS[m].map((k) => STEPS[k]);
+  const wc = weekCount(), met = wc >= S.target;
+  const hero = '<section class="glass hero-card" aria-labelledby="t-hero">' +
+    '<div class="hero-top"><span class="icon-well" aria-hidden="true">' + ic("sparkle", 22) + '</span><div><h2 id="t-hero">Today\'s ' + m + ' minutes</h2><p aria-live="polite">' + SUMMARY[m] + "</p></div></div>" +
+    '<div class="segmented times" role="group" aria-label="How much time do you have?">' + [5, 15, 30].map((n) => '<button type="button" data-act="minutes" data-arg="' + n + '" aria-pressed="' + (m === n) + '">' + n + " min</button>").join("") + "</div>" +
+    '<ol class="plan-steps" aria-label="Steps in this session">' + plan.map((s, i) => '<li><span class="n">' + (i + 1) + '</span><span class="t">' + s.title + "<small>" + s.detail + '</small></span><span class="m">' + s.min + " min</span></li>").join("") + "</ol>" +
+    '<button type="button" class="primary lg block" data-act="startSession">Start session ' + ic("arrow", 18) + "</button></section>";
+  const tiles = '<div class="pair">' +
+    '<a class="glass tile-link" href="#interview"><span class="tile-top"><span class="icon-well sm">' + ic("mic") + "</span>" + ARROW + '</span><strong>Mock interview</strong><span class="sub">Practise out loud</span></a>' +
+    '<a class="glass tile-link" href="#library"><span class="tile-top"><span class="icon-well sm">' + ic("library") + "</span>" + ARROW + '</span><strong>Library</strong><span class="sub">' + S.lib.docs.length + " documents</span></a></div>";
+  const week = '<section class="glass week" aria-label="This week"><div><strong>' + wc + " of " + S.target + ' this week</strong><span class="small muted">' + (met ? "Weekly target met. Nice work." : (S.target - wc) + " more to hit your target") + "</span></div>" + weekDots() + "</section>";
+  const win = '<a class="glass win tint-ready" href="#progress"><span class="icon-well sm">' + ic("check") + '</span><span class="grow"><strong>Inventory optimisation is now ready</strong><span class="small muted">Your last 5 answers covered the key points.</span></span>' + ARROW + "</a>";
+  const see = '<a class="glass link-row" href="#progress"><span class="row" style="gap:.6rem">' + ic("chart") + "See what you know</span>" + ARROW + "</a>";
+  const head = '<div class="who"><a class="avatar lg" href="#profile" aria-label="Profile and settings">P</a><div><h1 class="hi" tabindex="-1">Hi Pouravi</h1><span class="sub">Amazon interview in 9 days</span></div>' +
+    '<button type="button" class="icon-btn glass" data-act="bell" aria-label="Reminders">' + ic("bell", 19) + "</button></div>";
+  const ask = '<a class="glass ask-bar" href="#document" data-act="askBar">' + ic("search", 18) + "Ask about your documents…</a>";
+  const debrief = S.showDebrief ? Debrief() : "";
+  const body = S.phone
+    ? '<div class="stack">' + head + ask + debrief + hero + tiles + week + win + see + "</div>"
+    : '<div class="stack">' + '<div class="page-head" style="margin-bottom:0"><div class="who"><a class="avatar lg" href="#profile" aria-label="Profile and settings">P</a><div><h1 tabindex="-1" style="margin:0;font-size:1.9rem">Hi Pouravi</h1><span class="sub">Amazon interview in 9 days</span></div></div><button type="button" class="icon-btn glass" data-act="bell" aria-label="Reminders">' + ic("bell", 19) + "</button></div>" +
+      ask + debrief + '<div class="today-grid"><div>' + hero + '</div><div class="stack">' + tiles + week + win + see + "</div></div></div>";
+  return shell(body, { hideTopOnPhone: true });
+}
+
+/* ================= 5. Session ================= */
+function startSession() {
+  const keys = PLANS[S.minutes];
+  S.sess = { minutes: S.minutes, steps: keys.map((k) => Object.assign({ key: k, status: "pending" }, STEPS[k])), idx: 0, open: false, done: false, wins: [] };
+  location.hash = "session";
+}
+function Session() {
+  const s = S.sess;
+  if (!s) return shell('<div class="empty"><h2>No session running</h2><p>Pick a time on Today and start one.</p><a class="btn" href="#today">Back to Today</a></div>');
+  if (s.done) {
+    const winsHtml = s.wins.map((w) => '<li class="glass ' + (w.tint || "tint-ready") + '"><span class="icon-well sm">' + ic(w.icon) + '</span><span><strong style="font-weight:500;display:block">' + w.title + '</strong><span class="small muted">' + w.sub + "</span></span></li>").join("");
+    const doneN = s.steps.filter((x) => x.status === "done").length;
+    return shell('<div class="glass hero-card celebrate" aria-live="polite"><div class="burst" aria-hidden="true">' + ic("sparkle", 40) + '</div><h1 tabindex="-1" style="font-size:1.9rem">Session done</h1><p class="muted">' + doneN + " of " + s.steps.length + " steps in about " + s.minutes + " minutes.</p>" +
+      '<ul class="win-list" aria-label="What changed">' + winsHtml + "</ul>" +
+      '<div class="glass week" style="margin:0 0 1rem"><div style="text-align:left"><strong>' + weekCount() + " of " + S.target + ' this week</strong><span class="small muted">' + (weekCount() >= S.target ? "Weekly target met" : "Keep going") + "</span></div>" + weekDots() + "</div>" +
+      '<button type="button" class="primary lg block" data-act="backToday">Back to Today</button></div>', { width: "narrow" });
+  }
+  const st = s.steps[s.idx], n = s.steps.length;
+  const pct = Math.round((s.steps.filter((x) => x.status !== "pending").length / n) * 100);
+  const list = '<ol class="step-list" aria-label="All steps">' + s.steps.map((x, i) => '<li><span class="st ' + (x.status === "done" ? "done" : i === s.idx ? "now" : "") + '">' + (x.status === "done" ? ic("check", 14) : x.status === "skipped" ? '<span class="tiny">–</span>' : "") + '</span><span style="flex:1">' + x.title + '</span><span class="small muted">' + (x.status === "done" ? "Done" : x.status === "skipped" ? "Skipped" : i === s.idx ? "Now" : x.min + " min") + "</span></li>").join("") + "</ol>";
+  const card = '<section class="glass hero-card step-card" aria-labelledby="st-h"><span class="badge info" style="align-self:flex-start">' + st.kind + " · " + st.min + ' min</span><h2 id="st-h" tabindex="-1">' + st.title + '</h2><p class="muted" style="margin:0">' + st.detail + "</p><p style=\"margin:0\">" + st.body + "</p>" +
+    (s.open ? '<p class="notice good" style="margin:0">' + ic("check", 16) + " Opened. When you've finished, mark it done here.</p>" : "") +
+    '<div class="step-actions">' + (s.open ? '<button type="button" class="primary lg block" data-act="stepDone">Mark done</button><div class="two"><button type="button" data-act="stepOpen">Open again</button><button type="button" data-act="stepSkip">Skip</button></div>'
+      : '<button type="button" class="primary lg block" data-act="stepOpen">Start step ' + ic("arrow", 18) + '</button><div class="two"><button type="button" data-act="stepDone">Mark done</button><button type="button" data-act="stepSkip">Skip</button></div>') + "</div></section>";
+  return shell(backLink("today", "Today") + '<div class="progress-head"><span>Step ' + (s.idx + 1) + " of " + n + "</span><span>" + s.minutes + ' min session</span></div><div class="meter" role="progressbar" aria-label="Session progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" style="margin-bottom:1rem"><div style="width:' + pct + '%"></div></div>' +
+    '<div class="stack">' + card + '<div class="glass card"><h3 style="font-size:.95rem">This session</h3>' + list + "</div></div>", { width: "narrow" });
+}
+function advanceStep(status) {
+  const s = S.sess; s.steps[s.idx].status = status; s.open = false;
+  const nextIdx = s.steps.findIndex((x, i) => i > s.idx && x.status === "pending");
+  if (nextIdx >= 0) { s.idx = nextIdx; S.focus = "#st-h"; render(); return; }
+  finishSession();
+}
+function finishSession() {
+  const s = S.sess; s.done = true; const wins = [];
+  const done = (k) => s.steps.some((x) => x.key === k && x.status === "done");
+  if (done("review")) { S.llLevel = Math.max(S.llLevel, 3); wins.push({ icon: "chart", title: "Little's Law is now strong", sub: "Up from getting there. 4 of 4 right today." }); }
+  if (done("story")) { S.firstStory = true; wins.push({ icon: "pen", title: "Your first stakeholder story", sub: "Stakeholder influence now has an answer to judge.", tint: "tint-unknown" }); }
+  if (done("mock")) wins.push({ icon: "mic", title: "One more mock answer", sub: "Program risk management is still a gap, but closer.", tint: "tint-warm" });
+  if (done("learn")) wins.push({ icon: "book", title: "Working capital: first read done", sub: "Try the quiz tomorrow to lock it in.", tint: "tint-warm" });
+  if (!S.weekOn[S.todayIdx]) S.weekOn[S.todayIdx] = true;
+  if (weekCount() >= S.target) wins.push({ icon: "target", title: "Weekly target met", sub: weekCount() + " of " + S.target + " sessions this week." });
+  if (!wins.length) wins.push({ icon: "check", title: "You showed up", sub: "That counts toward your week." });
+  s.wins = wins; S.focus = "h1"; render();
+}
+
+/* ================= 6. Quiz ================= */
+function gradeText(q, text) {
+  const t = " " + text.toLowerCase().replace(/\s+/g, " ") + " ";
+  const res = q.rubric.map((r) => {
+    const full = r.full.some((k) => t.indexOf(k) >= 0), part = !full && r.part.some((k) => t.indexOf(k) >= 0);
+    return { label: r.label, mark: full ? "y" : part ? "p" : "n" };
+  });
+  const score = res.reduce((a, r) => a + (r.mark === "y" ? 1 : r.mark === "p" ? 0.5 : 0), 0);
+  return { crit: res, score: score, max: q.rubric.length, verdict: score >= q.rubric.length - 0.5 ? "Strong answer" : score >= q.rubric.length / 2 ? "Partly there" : "Needs work" };
+}
+function Quiz() {
+  const z = S.quiz, n = QUESTIONS.length;
+  const banner = z.fromSession ? '<div class="notice info q-banner">' + ic("clock", 18) + '<span style="flex:1">Part of today\'s session</span><button type="button" class="ghost" data-act="quizBackSession">Back to session</button></div>' : "";
+  const dots = '<nav class="qdots" aria-label="Questions">' + QUESTIONS.map((_, i) => '<button type="button" data-act="qGo" data-arg="' + i + '" class="' + (z.res[i] ? "ans" : "") + '" aria-label="Question ' + (i + 1) + (z.res[i] ? ", answered" : "") + '"' + (i === z.idx && !z.finished ? ' aria-current="step"' : "") + "><i></i></button>").join("") + "</nav>";
+  const head = (z.fromSession ? "" : backLink("library", "Library")) + '<div class="page-head"><div><h1 tabindex="-1" style="font-size:1.7rem">Little\'s Law and variability</h1><p>From Factory Physics, chapters 7 and 8 · ' + n + " questions</p></div></div>";
+  if (z.finished) {
+    let score = 0, max = 0;
+    const rows = QUESTIONS.map((q, i) => { const r = z.res[i]; let lab = "Skipped", cls = ""; if (r) { if (q.type === "mcq") { max += 1; score += r.ok ? 1 : 0; lab = r.ok ? "Right" : "Not quite"; cls = r.ok ? "ready" : "warn"; } else { max += 1; score += r.score / r.max; lab = r.verdict; cls = r.verdict === "Strong answer" ? "ready" : r.verdict === "Partly there" ? "warn" : "gap"; } } else max += 1;
+      return '<li><span style="flex:1;min-width:0"><span class="small muted">' + (i + 1) + ". " + q.tag + '</span><br>' + esc(q.q.length > 80 ? q.q.slice(0, 78) + "…" : q.q) + '</span><span class="badge ' + cls + '">' + lab + "</span></li>"; }).join("");
+    const pts = Math.round(score * 10) / 10;
+    return shell(banner + head + '<section class="glass hero-card stack" aria-live="polite"><div class="row" style="align-items:flex-end"><span class="score">' + pts + '</span><span class="muted" style="padding-bottom:.3rem">out of ' + n + "</span></div>" +
+      '<p style="margin:0">' + (pts >= 3 ? "Little's Law is now strong. You'll see it again in about a week." : "Good start. We'll bring the ones you missed back in a few days.") + '</p><ul class="list">' + rows + "</ul>" +
+      (z.fromSession ? '<button type="button" class="primary lg block" data-act="quizBackSession">Back to session</button>' : '<div class="row"><a class="btn primary lg" href="#today">Back to Today</a><button type="button" data-act="quizRestart">Try again</button></div>') + "</section>" + '<div style="margin-top:1rem">' + dots + "</div>", { width: "narrow" });
+  }
+  const q = QUESTIONS[z.idx], r = z.res[z.idx], a = z.ans[z.idx];
+  let inner = '<span class="badge info">' + q.tag + '</span><h2 id="q-h" tabindex="-1" style="margin:.7rem 0 1rem">' + esc(q.q) + "</h2>";
+  if (q.type === "mcq") {
+    inner += '<div role="group" aria-label="Choices">' + q.opts.map((o, i) => {
+      let cls = "", tail = "";
+      if (r) { if (i === q.correct) { cls = "correct"; tail = '<span class="badge ready">' + ic("check", 14) + "Right answer</span>"; } else if (i === a) { cls = "wrong"; tail = '<span class="badge warn">Your answer</span>'; } }
+      return '<button type="button" class="option ' + cls + '" data-act="qPick" data-arg="' + i + '" aria-pressed="' + (a === i) + '"' + (r ? " disabled" : "") + '><span class="key">' + "ABCD"[i] + '</span><span class="grow">' + esc(o) + "</span>" + tail + "</button>"; }).join("") + "</div>";
+    if (r) inner += '<div class="feedback" tabindex="-1" id="fb" aria-live="polite"><strong style="font-weight:500">' + (r.ok ? "✓ Right." : "✗ Not quite. The answer is " + "ABCD"[q.correct] + ".") + "</strong><p style=\"margin:.3rem 0 .3rem\">" + q.why + '</p><span class="small muted">Source: ' + q.src + "</span></div>";
+  } else {
+    inner += '<label for="q-text">Your answer</label><textarea id="q-text" rows="5" data-model="quiz.ans.' + z.idx + '"' + (r ? " readonly" : "") + ">" + esc(a || "") + "</textarea>" +
+      (r ? "" : '<div class="row" style="margin-top:.5rem"><button type="button" class="ghost small" data-act="qSample">Fill in a sample answer</button></div>');
+    if (r) inner += '<div class="feedback" tabindex="-1" id="fb" aria-live="polite"><div class="row spread"><strong style="font-weight:500">' + r.verdict + '</strong><span class="small muted">' + r.score + " of " + r.max + ' points</span></div><p class="small muted" style="margin:.4rem 0 0">What a good answer covers:</p><ul class="criteria">' +
+      r.crit.map((c) => '<li><span class="mk ' + c.mark + '" aria-hidden="true">' + (c.mark === "y" ? "✓" : c.mark === "p" ? "◐" : "✗") + '</span><span>' + c.label + ' <span class="sr-only">' + (c.mark === "y" ? "covered" : c.mark === "p" ? "partly covered" : "missing") + "</span></span></li>").join("") +
+      '</ul><details style="margin-top:.7rem"><summary style="cursor:pointer;min-height:44px;display:flex;align-items:center">See a model answer</summary><p class="small" style="margin:.2rem 0 .3rem">' + q.model + '</p><span class="small muted">Source: ' + q.src + "</span></details></div>";
+  }
+  const last = z.idx === n - 1;
+  const actions = r ? '<button type="button" class="primary lg block" data-act="qNext">' + (last ? "See my results" : "Next question") + "</button>"
+    : '<div class="row"><button type="button" class="primary lg" style="flex:1" data-act="qCheck"' + ((q.type === "mcq" ? a == null : !(a && a.trim())) ? " disabled" : "") + '>Check answer</button><button type="button" class="ghost" data-act="qSkip">Skip</button></div>';
+  return shell(banner + head + '<div class="progress-head"><span>Question ' + (z.idx + 1) + " of " + n + "</span><span>" + Object.keys(z.res).length + ' answered</span></div><section class="glass q-card" aria-labelledby="q-h">' + inner + '<div style="margin-top:1rem">' + actions + "</div></section>" + '<div style="margin-top:.8rem">' + dots + "</div>", { width: "narrow" });
+}
+
+/* ================= 7. Prep hub ================= */
+function Prep() {
+  const hero = '<a class="glass hero-card" href="#roleprep" style="display:block;text-decoration:none;color:inherit"><div class="row spread" style="align-items:flex-start"><div class="hero-top"><span class="icon-well" aria-hidden="true">' + ic("prep", 22) + '</span><div><span class="small muted">Interview in 9 days · 23 October</span><h2 style="margin:.1rem 0 0">Senior Program Manager, Supply Chain</h2><p>Amazon</p></div></div>' + ARROW + "</div>" +
+    '<div class="grid3" style="margin-top:1rem;gap:.6rem">' +
+    '<div class="glass" style="padding:.7rem .85rem;border-radius:16px"><span class="small muted">Gaps to close</span><div style="font-weight:500">2 of 4 skills</div></div>' +
+    '<div class="glass" style="padding:.7rem .85rem;border-radius:16px"><span class="small muted">Plan</span><div style="font-weight:500">4 of 11 done</div></div>' +
+    '<div class="glass" style="padding:.7rem .85rem;border-radius:16px"><span class="small muted">Mock interviews</span><div style="font-weight:500">' + S.mockCount + " this week</div></div></div></a>";
+  const row = (href, icon, t, s, badge) => '<li><a class="glass prep-row" href="#' + href + '" style="text-decoration:none;color:inherit"><span class="icon-well sm">' + ic(icon) + '</span><span class="grow"><strong>' + t + '</strong><span class="small muted">' + s + "</span></span>" + (badge || "") + ARROW + "</a></li>";
+  return shell('<div class="page-head"><div><h1 tabindex="-1">Prep</h1><p>Every role and goal you\'re preparing for.</p></div><button type="button" data-act="toastNew">' + ic("plus", 18) + "New prep</button></div>" +
+    '<div class="stack">' + hero +
+    '<h2 class="sec-title">Role preps</h2><ul class="list stack-sm" style="list-style:none">' +
+    row("roleprep", "prep", "Senior Program Manager, Supply Chain", "Amazon · interview 23 October", '<span class="badge gap">2 gaps</span>') +
+    row("roleprep", "prep", "Supply Chain Analyst", "Flexport · no date set", '<span class="badge">Draft</span>') + "</ul>" +
+    '<h2 class="sec-title">Learning goals</h2><ul class="list stack-sm" style="list-style:none">' +
+    row("progress", "book", "Operations fundamentals", "Factory Physics · 3 sessions a week", '<span class="badge ready">On track</span>') +
+    row("progress", "target", "CFA Level I, Corporate Issuers", "Corporate Finance notes · exam in May", '<span class="badge warn">Behind by 2 sessions</span>') + "</ul></div>");
+}
+
+/* ================= 8. Role prep ================= */
+function RolePrep() {
+  const ov = S.prep.override;
+  const cards = SKILLS.map((s) => {
+    const open = S.prep.open === s.id;
+    const card = '<button type="button" class="skill ' + s.tint + '" data-act="skillToggle" data-arg="' + s.id + '" aria-expanded="' + open + '" aria-controls="sd-' + s.id + '"><span class="top"><span class="name">' + s.name + '</span><span class="badge ' + s.cls + '">' + s.label + "</span></span>" +
+      "<p>" + (s.resume ? "“<mark>" + esc(s.resume) + "</mark>”" : s.line) + '</p><span class="meta">' + s.meta + '</span><span class="bottom"><span>' + s.next + "</span>" + (open ? '<span class="arrow-tile" aria-hidden="true">' + ic("close", 16) + "</span>" : ARROW) + "</span></button>";
+    const det = open ? '<div class="skill-detail" id="sd-' + s.id + '"><dl class="kv"><dt>How much it matters</dt><dd>' + s.importance + "</dd><dt>What the job says</dt><dd>“<mark>" + esc(s.job) + "</mark>”</dd><dt>Your evidence</dt><dd>" + s.evidence + (s.resume ? " “<mark>" + esc(s.resume) + "</mark>”" : "") + "</dd><dt>How you're doing</dt><dd>" + s.assessed + "</dd></dl>" +
+      '<h3 style="font-size:.98rem">Why this priority?</h3>' + s.factors.map((f) => '<div class="factor"><span>' + f[0] + '</span><span class="meter" role="img" aria-label="' + f[0] + ": " + f[2] + '"><div style="width:' + f[1] + '%"></div></span><span class="v small">' + f[2] + "</span></div>").join("") +
+      '<div style="margin-top:1rem"><span class="small muted" id="ov-' + s.id + '">Change the priority if we got it wrong</span><div class="segmented" role="group" aria-labelledby="ov-' + s.id + '" style="margin-top:.35rem">' + ["Higher", "As ranked", "Lower"].map((o) => '<button type="button" data-act="override" data-arg="' + s.id + "|" + o + '" aria-pressed="' + ((ov[s.id] || "As ranked") === o) + '">' + o + "</button>").join("") + "</div>" +
+      (ov[s.id] && ov[s.id] !== "As ranked" ? '<p class="small muted" style="margin:.4rem 0 0" aria-live="polite">Saved. Your plan will use this when you rebuild it.</p>' : "") + "</div></div>" : "";
+    return '<div class="skill-wrap' + (open ? " open" : "") + '">' + card + det + "</div>";
+  }).join("");
+  const ready = [["Skills covered", 2, "2 of 4: getting there"], ["Story bank", 1, "1 story: needs more"], ["Mock answers", 2, "6 answers: getting there"]];
+  const plan = [["Today", "Write a stakeholder story", "6 min", true], ["Thu", "Working capital in 20 minutes", "20 min", false], ["Fri", "Mock interview: program risk", "15 min", false], ["Sat", "Review Little's Law", "4 min", false], ["Mon", "Full mock interview", "30 min", false]];
+  return shell(backLink("prep", "Prep") +
+    '<div class="page-head"><div><h1 tabindex="-1" style="max-width:20ch">Senior Program Manager, Supply Chain</h1><p>Amazon. Interview on 23 October, in 9 days.</p></div><span class="pill"><b>2 gaps</b>&nbsp;to close first</span></div>' +
+    '<div class="grid3">' + ready.map((r) => '<div class="glass ready-card"><div class="lbl">' + r[0] + '</div><div class="val">' + r[2] + "</div>" + steps4(r[1], r[0] + ": " + r[2]) + "</div>").join("") + "</div>" +
+    '<p class="small muted" style="margin:.6rem 0 0">These show the evidence you have so far. They\'re not a hiring prediction.</p>' +
+    '<h2 class="sec-title">Skills, most important first</h2><div class="grid2">' + cards + "</div>" +
+    '<p class="small muted" style="margin:.6rem 0 0">+1 more skill: Written communication (not enough answers yet).</p>' +
+    '<div class="row spread"><h2 class="sec-title">Your plan</h2><button type="button" class="ghost small" data-act="toastRebuild">Rebuild my plan</button></div>' +
+    '<div class="glass card"><ul class="plan-list">' + plan.map((p) => '<li><span class="day">' + p[0] + '</span><span class="grow">' + p[1] + '<br><span class="small muted">' + p[2] + "</span></span>" + (p[3] ? '<span class="badge info">Next up</span>' : "") + "</li>").join("") + "</ul></div>" +
+    '<div style="margin-top:1.2rem"><a class="btn primary lg block" href="#interview" data-act="ivFresh">' + ic("mic", 18) + "Start mock interview</a></div>");
+}
+
+/* ================= 9. Mock interview ================= */
+const IVQ = "Tell me about a time you identified a major risk to a program before it hit. What did you do?";
+const IVF = "You said the vendor slipped two weeks. How did you decide what to cut, and who did you have to convince?";
+const IV_SAMPLE = "During our WMS migration at 3 sites, I noticed the vendor's integration testing was two weeks behind. I set up a risk register with owners for each site, and we agreed a fallback: run the old system in parallel at the last site. We went live on time at two sites and one week late at the third, with no shipping delays.";
+const IV_SAMPLE2 = "I ranked the remaining work by shipping impact and cut the reporting features from launch. I had to convince the regional ops director, so I showed her the cost of a missed peak week against a month without new reports.";
+function evalAnswer(t, follow) {
+  const x = t.toLowerCase();
+  const has = (arr) => arr.some((k) => x.indexOf(k) >= 0);
+  if (follow) {
+    const c = [["Explains how you decided", has(["rank", "priorit", "impact", "cost"]) ? "y" : "n"], ["Names who you convinced", has(["director", "lead", "vp", "manager", "convince", "stakeholder"]) ? "y" : "n"], ["Shows the trade-off in numbers", has(["week", "$", "%", "cost of"]) ? "y" : "p"]];
+    return { crit: c, star: null, missing: has(["%", "$"]) ? null : "how much the missed peak week would have cost, in dollars or orders" };
+  }
+  const S_ = has(["during", "when", "migration", "launch", "at "]), T = has(["i noticed", "my role", "i was", "responsible", "i owned"]), A = has(["i set", "i built", "i agreed", "i led", "we agreed", "register", "fallback"]), R = has(["on time", "result", "%", "no ", "saved", "went live"]);
+  const crit = [["Names a specific risk early", has(["behind", "slip", "late", "risk"]) ? "y" : "n"], ["Shows what you did, not just the team", has(["i set", "i built", "i led", "i noticed"]) ? "y" : has(["we "]) ? "p" : "n"], ["Has a mitigation plan", has(["fallback", "register", "mitigat", "plan b", "parallel"]) ? "y" : "n"], ["Ends with a measurable result", has(["%", "$", "days", "no shipping"]) ? "p" : "n"]];
+  return { crit: crit, star: [["Situation", S_ ? "y" : "n"], ["Task", T ? "y" : "p"], ["Action", A ? "y" : "n"], ["Result", R ? "p" : "n"]], missing: "how many orders or how much revenue was at risk, and how the risk register was reviewed each week" };
+}
+function evalCard(r, title, id) {
+  return '<div class="feedback" aria-live="polite" tabindex="-1" id="' + id + '"><div class="row spread"><strong style="font-weight:500">' + title + '</strong><span class="small muted">' + r.crit.filter((c) => c[1] === "y").length + " of " + r.crit.length + " covered</span></div>" +
+    '<p class="small muted" style="margin:.4rem 0 0">What a good answer covers:</p><ul class="criteria">' + r.crit.map((c) => '<li><span class="mk ' + c[1] + '" aria-hidden="true">' + (c[1] === "y" ? "✓" : c[1] === "p" ? "◐" : "✗") + "</span><span>" + c[0] + ' <span class="sr-only">' + (c[1] === "y" ? "covered" : c[1] === "p" ? "partly covered" : "missing") + "</span></span></li>").join("") + "</ul>" +
+    (r.star ? '<p class="small muted" style="margin:.7rem 0 .35rem">Story structure</p><div class="star">' + r.star.map((s) => '<span class="' + s[1] + '">' + (s[1] === "y" ? "✓ " : s[1] === "p" ? "◐ " : "✗ ") + s[0] + (s[1] === "p" ? ": thin" : s[1] === "n" ? ": missing" : "") + "</span>").join("") + "</div>" : "") +
+    (r.missing ? '<div class="notice warn small" style="margin-top:.8rem"><strong style="font-weight:500">Add these real details, don\'t make them up:</strong> ' + r.missing + ".</div>" : "") + "</div>";
+}
+function Interview() {
+  const v = S.iv;
+  const head = backLink("roleprep", "Amazon prep") + '<div class="page-head"><div><h1 tabindex="-1" style="font-size:1.7rem">Mock interview</h1><p>Program risk management · Critical gap</p></div><span class="small muted">Question 1 of 1 · with a follow-up</span></div>';
+  if (v.phase === "summary") {
+    return shell(head + '<section class="glass hero-card stack" aria-live="polite"><h2 tabindex="-1" id="iv-sum">How it went</h2><p style="margin:0">Your first answer had a clear risk and a real mitigation. The follow-up showed how you decide under pressure. The gap now is numbers: how much was at risk and what the fix saved.</p>' +
+      '<div class="grid2"><div class="glass card tint-ready"><span class="badge ready">Strong</span><p style="margin:.5rem 0 0">Spotting the risk early and owning the fallback plan.</p></div><div class="glass card tint-warm"><span class="badge warn">Add next time</span><p style="margin:.5rem 0 0">Orders or revenue at risk, and how the register was reviewed.</p></div></div>' +
+      '<p class="small muted" style="margin:0">Program risk management moved from no answers to one answer. It stays a gap until two answers cover the key points.</p>' +
+      '<div class="row"><a class="btn primary lg" href="' + (v.fromSession ? "#session" : "#roleprep") + '" data-act="' + (v.fromSession ? "ivBackSession" : "") + '">' + (v.fromSession ? "Back to session" : "Back to Amazon prep") + '</a><button type="button" data-act="ivFresh">Try another question</button></div></section>', { width: "narrow" });
+  }
+  let h = head + '<section class="glass card mock-q" aria-labelledby="iv-q"><div class="row" style="gap:.6rem;margin-bottom:.6rem"><span class="icon-well sm">' + ic("mic") + '</span><span class="small muted">The interviewer asks</span></div><h2 id="iv-q" tabindex="-1">' + IVQ + "</h2>";
+  if (!v.r1) {
+    h += '<label for="iv-a1">Your answer</label><textarea id="iv-a1" rows="6" data-model="iv.a1" placeholder="Type or say your answer. Aim for 1 to 2 minutes.">' + esc(v.a1) + '</textarea><div class="row" style="margin-top:.6rem"><button type="button" class="primary lg" style="flex:1" data-act="ivSubmit"' + (v.a1.trim() ? "" : " disabled") + '>Get feedback</button><button type="button" class="ghost" data-act="ivSample">Fill in a sample answer</button></div>';
+  } else {
+    h += '<div class="bubble" style="background:rgba(255,255,255,.85)"><span class="small muted">Your answer</span><p style="margin:.2rem 0 0">' + esc(v.a1) + "</p></div>" + evalCard(v.r1, "Good start, with one thing to add", "iv-ev");
+  }
+  h += "</section>";
+  if (v.r1) {
+    h += '<section class="followup" style="margin-top:1rem" aria-labelledby="iv-f"><div class="glass card mock-q"><div class="row" style="gap:.6rem;margin-bottom:.5rem"><span class="badge info">Follow-up</span></div><h2 id="iv-f" tabindex="-1" style="font-size:1.12rem">' + IVF + "</h2>";
+    if (!v.r2) h += '<label for="iv-a2">Your answer</label><textarea id="iv-a2" rows="4" data-model="iv.a2">' + esc(v.a2) + '</textarea><div class="row" style="margin-top:.6rem"><button type="button" class="primary lg" style="flex:1" data-act="ivSubmit2"' + (v.a2.trim() ? "" : " disabled") + '>Get feedback</button><button type="button" class="ghost" data-act="ivSample2">Fill in a sample answer</button></div>';
+    else h += '<div class="bubble" style="background:rgba(255,255,255,.85)"><span class="small muted">Your answer</span><p style="margin:.2rem 0 0">' + esc(v.a2) + "</p></div>" + evalCard(v.r2, "Clear and specific", "iv-ev2") + '<button type="button" class="primary lg block" style="margin-top:1rem" data-act="ivSummary">See summary</button>';
+    h += "</div></section>";
+  }
+  return shell(h, { width: "narrow" });
+}
+
+/* ================= 10. Library ================= */
+const DOC_STATUS = { ready: ["ready", "Ready"], partial: ["warn", "Couldn't read 6 pages"], failed: ["gap", "Couldn't open"], processing: ["info", "Reading pages…"] };
+function Library() {
+  const L = S.lib;
+  const up = '<section class="glass card stack-sm" aria-labelledby="up-h"><h2 id="up-h" style="font-size:1.1rem;margin:0">Add a document</h2>' +
+    (L.rightsAck ? '<p class="small muted" style="margin:0">' + ic("check", 14) + " You've confirmed you have the right to use what you upload.</p>"
+      : '<label class="check"><input type="checkbox" id="rights" data-act="rights"' + (L.rightsAck ? " checked" : "") + "> <span>I own this material or have the right to use it for my own study. It stays private to my account.</span></label>") +
+    '<div class="dropzone">' + ic("upload", 26) + '<span>Drop a PDF here, up to 300 pages</span><button type="button" class="primary" data-act="upload"' + (L.rightsAck ? "" : ' disabled aria-describedby="rights-why"') + ">Choose a file</button>" + (L.rightsAck ? "" : '<span id="rights-why" class="tiny">Tick the box above first.</span>') + "</div>" +
+    (L.up ? '<div class="notice info" aria-live="polite"><strong style="font-weight:500">Reading “Operations Strategy notes”, 64 pages.</strong> This usually takes about 2 minutes. The first pages are ready, so you can ' + (L.up.ready ? '<a href="#quiz" data-act="quizFresh">try 3 quick questions on chapter 1</a> now.' : "start soon.") + "</div>" : "") + "</section>";
+  const tiles = L.docs.map((d) => {
+    const st = DOC_STATUS[d.status];
+    const help = d.status === "partial" ? "Pages 31 to 36 are scanned images. Upload a text version to include them." : d.status === "failed" ? "The file is password-protected. Remove the password and upload it again." : d.status === "processing" ? "About 2 minutes left." : "Last opened yesterday.";
+    const isLink = d.status === "ready" || d.status === "partial";
+    const inner = '<span class="tile-top"><span class="cover" aria-hidden="true">' + ic("book", 18) + "</span>" + (isLink ? ARROW : "") + "</span><strong>" + esc(d.title) + '</strong><span class="sub">' + esc(d.sub) + '</span><span class="sub">' + help + '</span><span class="foot"><span class="badge ' + st[0] + '">' + st[1] + "</span>" + (d.status === "failed" ? '<span class="small" style="text-decoration:underline">Try again</span>' : "") + "</span>";
+    return isLink ? '<a class="glass doc-tile" href="#document" style="text-decoration:none">' + inner + "</a>" : '<button type="button" class="glass doc-tile" data-act="retryDoc" data-arg="' + d.id + '">' + inner + "</button>";
+  }).join("");
+  const quizzes = '<ul class="list">' + [["Little's Law and variability", "Factory Physics · 4 questions", "Not started"], ["Working capital basics", "Corporate Finance notes · Tuesday", "1 of 4 right"], ["Queueing at busy stations", "Factory Physics · last week", "5 of 5 right"]].map((q) =>
+    '<li><a href="#quiz" data-act="quizFresh" style="display:flex;justify-content:space-between;gap:.75rem;width:100%;align-items:center;text-decoration:none;min-height:44px"><span><span style="font-weight:500">' + q[0] + '</span><br><span class="small muted">' + q[1] + '</span></span><span class="row" style="gap:.5rem;flex-wrap:nowrap"><span class="badge">' + q[2] + "</span>" + ARROW + "</span></a></li>").join("") + "</ul>";
+  return shell('<div class="page-head"><div><h1 tabindex="-1">Library</h1><p>Your books and notes. Everything the tutor says comes from here.</p></div></div>' +
+    '<div class="stack">' + up + '<h2 class="sec-title">Documents</h2><div class="grid3">' + tiles + "</div>" + '<h2 class="sec-title">Recent quizzes</h2><div class="glass card" style="padding-top:.4rem;padding-bottom:.4rem">' + quizzes + "</div></div>");
+}
+
+/* ================= 11. Document ================= */
+function readerHtml() {
+  return '<div class="page-text">' + READER.map((p) => '<div class="page-no" id="pg-' + p.page + '">Page ' + p.page + "</div>" + p.paras.map((t) => "<p>" + t + "</p>").join("")).join("") + "</div>";
+}
+function answerHtml(m) {
+  if (m.notFound) {
+    return '<div class="bubble"><span class="badge warn">Not in your documents</span><p style="margin:.5rem 0">I couldn\'t find this in Factory Physics, so I won\'t guess from it.</p>' +
+      (m.general ? '<div class="notice info small"><strong style="font-weight:500">General knowledge, not from your documents:</strong> Paris is the capital of France.</div>' : '<button type="button" data-act="general" data-arg="' + m.i + '">Answer from general knowledge</button>') + "</div>";
+  }
+  let n = 0; const num = {};
+  const text = esc(m.a).replace(/\[(\w+)\]/g, (_, k) => { if (!num[k]) num[k] = ++n; return '<button type="button" class="cite" data-act="cite" data-arg="' + k + '" aria-label="Source ' + num[k] + ", page " + QUOTES[k][0] + '">' + num[k] + "</button>"; });
+  return '<div class="bubble"><span class="badge ready">' + ic("check", 13) + "Sources checked</span>" + text.split("\n\n").map((p) => '<p style="margin:.55rem 0 0;white-space:pre-line">' + p + "</p>").join("") +
+    '<div style="margin-top:.6rem">' + Object.keys(num).map((k) => '<button type="button" class="cite-item" data-act="cite" data-arg="' + k + '"><span class="small" style="font-weight:600">' + num[k] + ". Page " + QUOTES[k][0] + "</span> <q>" + esc(QUOTES[k][1]) + "</q></button>").join("") + "</div></div>";
+}
+function tutorHtml() {
+  const D = S.doc;
+  const msgs = D.msgs.map((m, i) => { m.i = i; return '<div class="msg user"><div class="bubble">' + esc(m.q) + '</div></div><div class="msg">' + answerHtml(m) + "</div>"; }).join("");
+  const start = '<div class="starter"><p class="small muted" style="margin:0">Try one of these</p>' + STARTERS.map((s, i) => '<button type="button" data-act="starter" data-arg="' + i + '">' + ic("sparkle", 16) + s.q + "</button>").join("") + '<button type="button" data-act="askText" data-arg="What is the capital of France?">' + ic("search", 16) + "What is the capital of France?</button></div>";
+  return '<div class="pane-body" id="chat" aria-live="polite">' + (msgs || '<p class="muted small">Ask anything about this book. Every answer points to the page it came from.</p>') + (D.msgs.length < 3 ? start : "") + "</div>" +
+    '<form class="chat-form" data-form="ask"><label for="ask-in" class="sr-only">Ask about Factory Physics</label><input id="ask-in" type="text" placeholder="Ask about this book…" data-model="doc.draft" value="' + esc(D.draft) + '"><button type="submit" class="dark">Ask</button></form>';
+}
+function practiseHtml() {
+  return '<div class="pane-body stack"><p class="muted small" style="margin:0">Practise from this book.</p>' +
+    '<a class="glass prep-row" href="#quiz" data-act="quizFresh" style="text-decoration:none;color:inherit"><span class="icon-well sm">' + ic("target") + '</span><span class="grow"><strong>Little\'s Law and variability</strong><span class="small muted">4 questions · about 5 min</span></span>' + ARROW + "</a>" +
+    '<a class="glass prep-row" href="#quiz" data-act="quizFresh" style="text-decoration:none;color:inherit"><span class="icon-well sm">' + ic("book") + '</span><span class="grow"><strong>Chapter 8 review</strong><span class="small muted">Due for review in 2 days</span></span>' + ARROW + "</a></div>";
+}
+function Doc() {
+  const D = S.doc;
+  const head = backLink("library", "Library") + '<div class="page-head"><div><h1 tabindex="-1" style="font-size:1.7rem">Factory Physics, 3rd ed.</h1><p>Chapter 8: Variability basics · pages 238 to 241</p></div><span class="badge ready">Ready</span></div>';
+  const reader = '<section class="pane" aria-label="Reader"><div class="pane-head"><strong style="font-weight:500">Reader</strong><span class="small muted">Page 238 of 712</span></div><div class="pane-body" id="reader">' + readerHtml() + "</div></section>";
+  if (S.phone) {
+    const seg = '<div class="segmented" role="group" aria-label="View" style="margin-bottom:.8rem">' + [["read", "Read"], ["ask", "Ask"], ["practise", "Practise"]].map(([k, l]) => '<button type="button" data-act="docTab" data-arg="' + k + '" aria-pressed="' + (D.tab === k) + '">' + l + "</button>").join("") + "</div>";
+    const pane = D.tab === "read" ? reader : '<section class="pane" aria-label="' + (D.tab === "ask" ? "Tutor" : "Practise") + '"><div class="pane-head"><strong style="font-weight:500">' + (D.tab === "ask" ? "Tutor" : "Practise") + "</strong></div>" + (D.tab === "ask" ? tutorHtml() : practiseHtml()) + "</section>";
+    return shell(head + seg + pane);
+  }
+  const tabs = '<div class="tabs" role="tablist" aria-label="Side panel">' + [["ask", "Ask"], ["practise", "Practise"]].map(([k, l]) => '<button type="button" role="tab" data-act="docTTab" data-arg="' + k + '" aria-selected="' + (D.ttab === k) + '">' + l + "</button>").join("") + "</div>";
+  return shell(head + '<div class="workspace">' + reader + '<section class="pane" aria-label="Tutor"><div class="pane-head"><strong style="font-weight:500">Tutor</strong>' + tabs + "</div>" + (D.ttab === "ask" ? tutorHtml() : practiseHtml()) + "</section></div>", { width: "wide" });
+}
+function askTutor(q) {
+  q = (q || "").trim(); if (!q) return;
+  const st = STARTERS.find((s) => s.q.toLowerCase() === q.toLowerCase()) || STARTERS.find((s) => q.toLowerCase().indexOf(s.q.toLowerCase().split(" ").slice(-2).join(" ")) >= 0) ||
+    (/little/i.test(q) ? STARTERS[0] : /variab|slow|queue/i.test(q) ? STARTERS[1] : /summar|chapter/i.test(q) ? STARTERS[2] : null);
+  S.doc.msgs.push(st ? { q: q, a: st.a } : { q: q, notFound: true, general: false });
+  S.doc.draft = ""; render();
+  const c = $("#chat"); if (c) c.scrollTop = c.scrollHeight;
+}
+function showCite(k) {
+  if (S.phone && S.doc.tab !== "read") { S.doc.tab = "read"; render(); }
+  S.doc.hl = k;
+  $$(".page-text mark").forEach((m) => m.classList.toggle("hl", m.dataset.q === k));
+  const el = $('.page-text mark[data-q="' + k + '"]'), rd = $("#reader");
+  if (el && rd) {
+    if (S.phone) { el.scrollIntoView({ block: "center", behavior: reduceMotion() ? "auto" : "smooth" }); }
+    else rd.scrollTo({ top: rd.scrollTop + el.getBoundingClientRect().top - rd.getBoundingClientRect().top - 60, behavior: reduceMotion() ? "auto" : "smooth" });
+  }
+  toast("Page " + QUOTES[k][0] + ": highlighted in the reader");
+}
+
+/* ================= 12. What you know ================= */
+function Progress() {
+  const g = [
+    ["Ready", "ready", [["Inventory optimisation", "Proven in 5 of 6 answers", 4], ["Safety stock", "Right 6 times in a row", 4]].concat(S.llLevel >= 3 ? [["Little's Law", "4 of 4 right today", 3]] : [])],
+    ["Getting there", "info", (S.llLevel < 3 ? [["Little's Law", "Next review in 2 days", 2]] : []).concat([["Queueing at busy stations", "3 of 5 right", 2], ["Reorder points", "2 of 3 right", 2]])],
+    ["Needs work", "warn", [["Working capital", "1 of 4 right on Tuesday", 1], ["Program risk management", "Critical for your Amazon role", 1]]],
+    ["Not enough answers yet", "", [["Stakeholder influence", S.firstStory ? "1 story written. Answer a question to see more." : "Write a story or answer a question", 0], ["Cash conversion cycle", "In your Corporate Finance notes", 0]]]
+  ];
+  return shell(backLink("today", "Today") + '<div class="page-head"><div><h1 tabindex="-1">What you know</h1><p>Based only on your answers. Each skill moves up as you get questions right over time.</p></div></div>' +
+    '<div class="stack">' + g.map(([t, c, items]) => '<section class="glass card" aria-labelledby="g-' + c + t.length + '"><div class="row spread"><h2 id="g-' + c + t.length + '" style="margin:0;font-size:1.1rem">' + t + '</h2><span class="badge ' + c + '">' + items.length + (items.length === 1 ? " skill" : " skills") + "</span></div>" +
+      '<div style="margin-top:.4rem">' + items.map((i) => '<div class="concept-row"><span><strong>' + i[0] + '</strong><span class="small muted">' + i[1] + "</span></span>" + steps4(i[2], i[0] + ": level " + i[2] + " of 4") + '<span class="small muted">' + (i[2] ? "Level " + i[2] + " of 4" : "No level yet") + "</span></div>").join("") + "</div></section>").join("") +
+    '<p class="small muted">We never show a single readiness score. “Not enough answers yet” means we can\'t tell, not that you\'re weak.</p></div>');
+}
+
+/* ================= 13. Profile ================= */
+function Profile() {
+  const sw = (act, on, label) => '<button type="button" class="switch" data-act="' + act + '" aria-pressed="' + on + '" aria-label="' + label + '"></button>';
+  const del = S.del.open ? '<div class="notice bad stack-sm" style="margin-top:.6rem"><p style="margin:0">This deletes your account, 3 documents, your Amazon prep and every answer. It can\'t be undone.</p><label for="del-in" style="color:var(--ink)">Type <b>delete my account</b> to confirm</label><input id="del-in" type="text" autocomplete="off" data-model="del.text" value="' + esc(S.del.text || "") + '"><div class="row"><button type="button" data-act="delCancel">Cancel</button><button type="button" class="dark" data-act="delGo" id="del-go"' + ((S.del.text || "").trim().toLowerCase() === "delete my account" ? "" : " disabled") + ">Delete everything</button></div></div>" : "";
+  return shell('<div class="page-head"><div class="who"><span class="avatar lg" aria-hidden="true">P</span><div><h1 tabindex="-1" style="margin:0;font-size:1.8rem">Pouravi</h1><span class="sub">pouravi@example.com</span></div></div></div>' +
+    '<div class="stack">' +
+    '<section class="glass card"><h2>Practice</h2><div class="set-row"><span class="grow"><strong>Weekly target</strong><span class="small muted">' + S.target + ' sessions a week</span></span><span class="row" style="gap:.4rem;flex-wrap:nowrap"><button type="button" class="icon-btn" data-act="tgt" data-arg="-1" aria-label="Fewer sessions">–</button><span style="min-width:1.5ch;text-align:center" aria-live="polite">' + S.target + '</span><button type="button" class="icon-btn" data-act="tgt" data-arg="1" aria-label="More sessions">+</button></span></div>' +
+    '<div class="set-row"><span class="grow"><strong>Daily reminder</strong><span class="small muted">7:30 pm, quiet hours 10 pm to 8 am</span></span>' + sw("remind", S.reminders, "Daily reminder") + "</div>" +
+    '<div class="set-row"><span class="grow"><strong>Weekly progress email</strong><span class="small muted">Sundays</span></span>' + sw("weekly", S.weeklyEmail, "Weekly progress email") + "</div></section>" +
+    '<section class="glass card"><h2>Display</h2><div class="set-row"><span class="grow"><strong>Reduce transparency</strong><span class="small muted">Solid cards instead of frosted glass. Easier to read, and kinder to older phones.</span></span>' + sw("solid", S.solid, "Reduce transparency") + "</div></section>" +
+    '<section class="glass card"><h2>Privacy</h2><div class="set-row"><span class="grow"><strong>Your data is private</strong><span class="small muted">Your documents and resume are never used to train models. Only you can see them.</span></span></div>' +
+    '<div class="set-row"><span class="grow"><strong>Download my data</strong><span class="small muted">Documents, answers and preps as a zip file</span></span><button type="button" data-act="download">' + ic("down", 18) + "Download</button></div></section>" +
+    '<section class="glass card"><h2>Account</h2><div class="set-row"><span class="grow"><strong>Sign out</strong></span><button type="button" data-act="signout">Sign out</button></div>' +
+    '<div class="set-row" style="flex-wrap:wrap"><span class="grow"><strong>Delete my account</strong><span class="small muted">Removes everything, permanently</span></span>' + (S.del.open ? "" : '<button type="button" class="danger" data-act="delOpen">Delete account</button>') + '<div style="flex-basis:100%">' + del + "</div></div></section></div>", { width: "narrow" });
+}
+
+/* ================= Router ================= */
+const ROUTES = { welcome: Welcome, signup: Signup, onboarding: Onboarding, today: Today, session: Session, quiz: Quiz, prep: Prep, roleprep: RolePrep, interview: Interview, library: Library, document: Doc, progress: Progress, profile: Profile };
+const LABELS = [["welcome", "1 Welcome"], ["signup", "2 Sign up"], ["onboarding", "3 Onboarding"], ["today", "4 Today"], ["session", "5 Session"], ["quiz", "6 Quiz"], ["prep", "7 Prep"], ["roleprep", "8 Role prep"], ["interview", "9 Mock interview"], ["library", "10 Library"], ["document", "11 Document"], ["progress", "12 What you know"], ["profile", "13 Profile"]];
+const DEFAULT_ROUTE = "today";
+function render() {
+  const fn = ROUTES[S.route] || ROUTES[DEFAULT_ROUTE];
+  $("#app").innerHTML = fn();
+  $("#rb-screens").innerHTML = LABELS.map(([k, l]) => '<a href="#' + k + '"' + (S.route === k ? ' aria-current="page"' : "") + ">" + l + "</a>").join("");
+  const rbEl = $(".rb"); if (rbEl && rbEl.offsetHeight) document.documentElement.style.setProperty("--rbh", rbEl.offsetHeight + "px");
+  const stage = $("#stage"); stage.className = "stage " + (S.phone ? "phone" : "desk");
+  document.body.classList.toggle("solid", S.solid);
+  $("#rb-phone").setAttribute("aria-pressed", S.phone); $("#rb-desk").setAttribute("aria-pressed", !S.phone);
+  $("#rb-solid").setAttribute("aria-pressed", S.solid); $("#rb-debrief").setAttribute("aria-pressed", S.showDebrief);
+  if (S.doc.hl) $$(".page-text mark").forEach((m) => m.classList.toggle("hl", m.dataset.q === S.doc.hl));
+  if (S.focus) { const el = $(S.focus, $("#app")); S.focus = null; if (el) { if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1"); el.focus({ preventScroll: false }); } }
+}
+function route() {
+  const h = location.hash.slice(1);
+  const prev = S.route;
+  S.route = ROUTES[h] ? h : DEFAULT_ROUTE;
+  if (S.route === "session" && !S.sess) { startSessionSilently(); }
+  if (prev !== S.route) { S.focus = "h1"; $("#scroll").scrollTop = 0; window.scrollTo(0, 0); }
+  render();
+}
+function startSessionSilently() { const keys = PLANS[S.minutes]; S.sess = { minutes: S.minutes, steps: keys.map((k) => Object.assign({ key: k, status: "pending" }, STEPS[k])), idx: 0, open: false, done: false, wins: [] }; }
+
+/* ================= Events ================= */
+function setModel(path, val) { const parts = path.split("."); let o = S; for (let i = 0; i < parts.length - 1; i++) { if (o[parts[i]] == null) o[parts[i]] = {}; o = o[parts[i]]; } o[parts[parts.length - 1]] = val; }
+const ACTIONS = {
+  minutes: (a) => { S.minutes = +a; render(); },
+  startSession: () => { startSession(); },
+  bell: () => toast("Reminders: today at 7:30 pm. Change it in Profile."),
+  askBar: () => { S.doc.tab = "ask"; S.doc.ttab = "ask"; },
+  debOut: (a) => { S.deb.outcome = a; S.deb.next = null; render(); },
+  debNext: (a) => { S.deb.next = a; render(); },
+  debSave: () => { S.deb.done = true; S.focus = "#deb"; render(); },
+  debReset: () => { S.deb = { outcome: null, next: null, done: false }; S.showDebrief = false; render(); },
+  stepOpen: () => { const s = S.sess, st = s.steps[s.idx]; s.open = true;
+    if (st.go === "quiz") { S.quiz = { idx: 0, ans: {}, res: {}, fromSession: true, finished: false }; location.hash = "quiz"; }
+    else if (st.go === "interview") { S.iv = { phase: "q", a1: "", a2: "", r1: null, r2: null, fromSession: true }; location.hash = "interview"; }
+    else { render(); toast(st.go === "story" ? "Story editor opened (in the real app)" : "Reading opened (in the real app)"); } },
+  stepDone: () => advanceStep("done"),
+  stepSkip: () => advanceStep("skipped"),
+  backToday: () => { S.sess = null; location.hash = "today"; },
+  quizBackSession: () => { if (S.sess) { const s = S.sess; if (s.steps[s.idx].go === "quiz") { location.hash = "session"; setTimeout(() => advanceStep("done"), 0); return; } } location.hash = "session"; },
+  ivBackSession: () => { if (S.sess && S.sess.steps[S.sess.idx].go === "interview") { setTimeout(() => advanceStep("done"), 0); } },
+  qPick: (a) => { S.quiz.ans[S.quiz.idx] = +a; render(); },
+  qCheck: () => { const z = S.quiz, q = QUESTIONS[z.idx];
+    if (q.type === "mcq") z.res[z.idx] = { ok: z.ans[z.idx] === q.correct }; else z.res[z.idx] = gradeText(q, z.ans[z.idx] || "");
+    S.focus = "#fb"; render(); },
+  qSample: () => { S.quiz.ans[S.quiz.idx] = QUESTIONS[S.quiz.idx].sample; render(); const t = $("#q-text"); if (t) t.focus(); },
+  qNext: () => { const z = S.quiz; if (z.idx < QUESTIONS.length - 1) { z.idx++; S.focus = "#q-h"; } else { z.finished = true; S.llLevel = Math.max(S.llLevel, Object.keys(z.res).length >= 3 ? 3 : S.llLevel); S.focus = "h1"; } render(); },
+  qSkip: () => ACTIONS.qNext(),
+  qGo: (a) => { S.quiz.idx = +a; S.quiz.finished = false; S.focus = "#q-h"; render(); },
+  quizRestart: () => { S.quiz = { idx: 0, ans: {}, res: {}, fromSession: false, finished: false }; S.focus = "#q-h"; render(); },
+  quizFresh: () => { S.quiz = { idx: 0, ans: {}, res: {}, fromSession: false, finished: false }; },
+  skillToggle: (a) => { S.prep.open = S.prep.open === a ? null : a; render(); const b = $('[data-act="skillToggle"][data-arg="' + a + '"]'); if (b) b.focus(); },
+  override: (a) => { const [id, v] = a.split("|"); S.prep.override[id] = v; render(); },
+  toastRebuild: () => toast("Plan rebuilt with your changes. 5 items this week."),
+  toastNew: () => toast("In the app this opens the gap report for a new job."),
+  ivFresh: () => { S.iv = { phase: "q", a1: "", a2: "", r1: null, r2: null, fromSession: false }; if (S.route === "interview") { S.focus = "#iv-q"; render(); } },
+  ivSample: () => { S.iv.a1 = IV_SAMPLE; render(); $("#iv-a1").focus(); },
+  ivSample2: () => { S.iv.a2 = IV_SAMPLE2; render(); $("#iv-a2").focus(); },
+  ivSubmit: () => { S.iv.r1 = evalAnswer(S.iv.a1, false); S.mockCount = 2; S.focus = "#iv-ev"; render(); },
+  ivSubmit2: () => { S.iv.r2 = evalAnswer(S.iv.a2, true); S.focus = "#iv-ev2"; render(); },
+  ivSummary: () => { S.iv.phase = "summary"; S.focus = "#iv-sum"; render(); },
+  rights: () => { S.lib.rightsAck = true; render(); toast("Thanks. We'll remember that."); },
+  upload: () => { const L = S.lib; if (L.docs.some((d) => d.id === "ops")) { toast("Already reading that one."); return; }
+    L.docs.unshift({ id: "ops", title: "Operations Strategy notes", sub: "PDF · 64 pages", status: "processing" }); L.up = { ready: false }; render();
+    timers.push(setTimeout(() => { L.up.ready = true; if (S.route === "library") render(); }, 1500));
+    timers.push(setTimeout(() => { const d = L.docs.find((x) => x.id === "ops"); if (d) d.status = "ready"; L.up = null; if (S.route === "library") render(); toast("Operations Strategy notes is ready"); }, 6000)); },
+  retryDoc: () => toast("Remove the password from the PDF, then choose it again."),
+  docTab: (a) => { S.doc.tab = a; render(); },
+  docTTab: (a) => { S.doc.ttab = a; render(); },
+  starter: (a) => askTutor(STARTERS[+a].q),
+  askText: (a) => askTutor(a),
+  general: (a) => { S.doc.msgs[+a].general = true; render(); },
+  cite: (a) => showCite(a),
+  tgt: (a) => { S.target = Math.min(7, Math.max(1, S.target + +a)); render(); },
+  remind: () => { S.reminders = !S.reminders; render(); },
+  weekly: () => { S.weeklyEmail = !S.weeklyEmail; render(); },
+  solid: () => { S.solid = !S.solid; render(); },
+  download: () => toast("We're preparing your zip. We'll email you a link within an hour."),
+  signout: () => { location.hash = "welcome"; S.w.phase = "form"; S.fromWelcome = false; },
+  delOpen: () => { S.del = { open: true, text: "" }; S.focus = "#del-in"; render(); },
+  delCancel: () => { S.del = { open: false }; render(); },
+  delGo: () => { S.del = { open: false }; toast("Account deleted (not really, this is a preview)."); location.hash = "welcome"; },
+  saveReport: () => { S.fromWelcome = true; S.authMode = "signup"; location.hash = "signup"; },
+  editReport: () => { S.w.phase = "form"; S.focus = "#w-job"; render(); },
+  goSignin: () => { S.fromWelcome = false; S.authMode = "signin"; location.hash = "signup"; },
+  authToggle: () => { S.authMode = S.authMode === "signup" ? "signin" : "signup"; S.focus = "h1"; render(); },
+  authDone: () => { if (S.authMode === "signin") location.hash = "today"; else { S.ob.step = 1; location.hash = "onboarding"; } },
+  obPick: (a) => { S.ob.prepFor = a; render(); },
+  obTarget: (a) => { S.ob.target = +a; render(); },
+  obNext: (a) => { S.ob.next = a; render(); },
+  obBack: () => { S.ob.step--; S.focus = "h1"; render(); },
+  obContinue: () => { if (S.ob.step < 3) { S.ob.step++; S.focus = "h1"; render(); return; }
+    S.target = S.ob.target; if (S.ob.next === "session") startSession(); else if (S.ob.next === "upload") location.hash = "library"; else location.hash = "today"; }
+};
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-act]");
+  if (!t || !$("#app").contains(t)) return;
+  const fn = ACTIONS[t.dataset.act]; if (!fn) return;
+  if (t.tagName === "BUTTON" || t.type === "checkbox") { if (t.tagName === "BUTTON") e.preventDefault(); }
+  fn(t.dataset.arg);
+});
+document.addEventListener("input", (e) => {
+  const t = e.target; if (!t.dataset || !t.dataset.model) return;
+  setModel(t.dataset.model, t.value);
+  // Enable / disable dependent buttons without a re-render (keeps the caret).
+  const enable = (sel, ok) => { const b = $(sel); if (b) b.disabled = !ok; };
+  if (t.id === "q-text") enable('[data-act="qCheck"]', t.value.trim().length > 0);
+  if (t.id === "iv-a1") enable('[data-act="ivSubmit"]', t.value.trim().length > 0);
+  if (t.id === "iv-a2") enable('[data-act="ivSubmit2"]', t.value.trim().length > 0);
+  if (t.id === "del-in") enable("#del-go", t.value.trim().toLowerCase() === "delete my account");
+});
+document.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const f = e.target.dataset.form;
+  if (f === "report") {
+    if (S.w.job.trim().length < 50 || S.w.resume.trim().length < 50) { toast("Paste a bit more of the job and your resume (at least a few lines each)."); return; }
+    S.w.phase = "loading"; render();
+    timers.push(setTimeout(() => { S.w.phase = "report"; S.focus = "#rep-h"; if (S.route === "welcome") render(); }, 1200));
+  } else if (f === "auth") ACTIONS.authDone();
+  else if (f === "ask") askTutor(S.doc.draft);
+});
+$("#rb-phone").addEventListener("click", () => { S.phone = true; render(); });
+$("#rb-desk").addEventListener("click", () => { S.phone = false; render(); });
+$("#rb-solid").addEventListener("click", () => { S.solid = !S.solid; render(); });
+$("#rb-debrief").addEventListener("click", () => { S.showDebrief = !S.showDebrief; S.deb = { outcome: null, next: null, done: false }; if (S.route !== "today") location.hash = "today"; else render(); });
+$("#rb-reset").addEventListener("click", () => { timers.forEach(clearTimeout); timers = []; const keep = { phone: S.phone, solid: S.solid }; S = initState(); Object.assign(S, keep); S.route = ""; route(); toast("Sample data reset"); });
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body></html>

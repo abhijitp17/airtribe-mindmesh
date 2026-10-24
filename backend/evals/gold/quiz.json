@@ -1,0 +1,8 @@
+{
+  "count": 5,
+  "difficulty": "medium",
+  "docs": [
+    {"doc": "docs/operations.txt", "focus": [null, "Little's Law", "variability", "bottleneck", "inventory policies"]},
+    {"doc": "docs/finance.txt", "focus": [null, "working capital", "cash conversion cycle", "net present value", "WACC"]}
+  ]
+}

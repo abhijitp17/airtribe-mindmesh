@@ -1,0 +1,58 @@
+# Mindmesh alert rules (Prometheus). SLOs and the reasoning: docs/slo.md.
+# Scrape each API process at /api/metrics with "Authorization: Bearer $METRICS_TOKEN".
+groups:
+  - name: mindmesh-slo
+    rules:
+      # Availability SLO 99.5% / 30 days -> error budget 0.5%. Multi-window burn-rate alerts
+      # (Google SRE workbook): page on a fast burn, ticket on a slow one.
+      - record: mindmesh:error_ratio:rate5m
+        expr: sum(rate(mindmesh_http_requests_total{route!="unmatched",status=~"5.."}[5m]))
+              / sum(rate(mindmesh_http_requests_total{route!="unmatched"}[5m]))
+      - record: mindmesh:error_ratio:rate1h
+        expr: sum(rate(mindmesh_http_requests_total{route!="unmatched",status=~"5.."}[1h]))
+              / sum(rate(mindmesh_http_requests_total{route!="unmatched"}[1h]))
+      - record: mindmesh:error_ratio:rate6h
+        expr: sum(rate(mindmesh_http_requests_total{route!="unmatched",status=~"5.."}[6h]))
+              / sum(rate(mindmesh_http_requests_total{route!="unmatched"}[6h]))
+      - alert: MindmeshErrorBudgetFastBurn
+        expr: mindmesh:error_ratio:rate1h > (14.4 * 0.005) and mindmesh:error_ratio:rate5m > (14.4 * 0.005)
+        for: 2m
+        labels: {severity: page}
+        annotations:
+          summary: "5xx rate is burning the monthly error budget ~14x too fast (2% of it in an hour)"
+          runbook: "docs/slo.md#when-an-alert-fires"
+      - alert: MindmeshErrorBudgetSlowBurn
+        expr: mindmesh:error_ratio:rate6h > (6 * 0.005)
+        for: 15m
+        labels: {severity: ticket}
+        annotations:
+          summary: "5xx rate would use the monthly error budget in ~5 days"
+
+      # Latency SLO: 95% of non-AI requests under 300 ms.
+      - alert: MindmeshSlowRequests
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(mindmesh_http_request_duration_seconds_bucket{
+            route!~"unmatched|/api/tutor/ask|/api/quizzes|/api/questions/.*|/api/interview/.*|/api/public/gap-report|/api/goals.*"}[10m]))) > 0.3
+        for: 15m
+        labels: {severity: ticket}
+        annotations: {summary: "p95 latency of non-AI requests is over 300 ms"}
+
+      # Tutor SLO: 95% of answers within 8 s (model time dominates).
+      - alert: MindmeshSlowTutor
+        expr: histogram_quantile(0.95, sum by (le) (rate(mindmesh_http_request_duration_seconds_bucket{route="/api/tutor/ask"}[15m]))) > 8
+        for: 15m
+        labels: {severity: ticket}
+        annotations: {summary: "p95 tutor answer time is over 8 s"}
+
+      # AI provider health.
+      - alert: MindmeshModelErrors
+        expr: sum(rate(mindmesh_ai_calls_total{outcome="error"}[10m])) / sum(rate(mindmesh_ai_calls_total[10m])) > 0.05
+        for: 10m
+        labels: {severity: page}
+        annotations: {summary: "over 5% of model calls fail after retries (provider outage or bad key?)"}
+
+      # Background jobs: processing, concept extraction, embeddings, deletions.
+      - alert: MindmeshJobsFailing
+        expr: sum by (kind) (increase(mindmesh_jobs_total{outcome="failed"}[1h])) > 3
+        labels: {severity: ticket}
+        annotations: {summary: "job kind {{ $labels.kind }} failed permanently more than 3 times in an hour"}

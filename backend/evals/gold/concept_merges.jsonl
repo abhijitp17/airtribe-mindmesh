@@ -1,0 +1,40 @@
+{"a": "Queue", "b": "Queues", "same": true}
+{"a": "WIP", "b": "Work in process", "same": true}
+{"a": "WIP", "b": "Work-in-process", "same": true}
+{"a": "Work in process (WIP)", "b": "WIP", "same": true}
+{"a": "Work in process (WIP)", "b": "Work in process", "same": true}
+{"a": "CV", "b": "Coefficient of variation", "same": true}
+{"a": "Bottlenecks", "b": "Bottleneck", "same": true}
+{"a": "Batch sizes", "b": "Batch size", "same": true}
+{"a": "Processes", "b": "Process", "same": true}
+{"a": "Inventories", "b": "Inventory", "same": true}
+{"a": "EOQ", "b": "Economic order quantity", "same": true}
+{"a": "NPV", "b": "Net present value", "same": true}
+{"a": "Net present value (NPV)", "b": "NPV", "same": true}
+{"a": "KPIs", "b": "Key performance indicators", "same": true}
+{"a": "SQL joins", "b": "SQL join", "same": true}
+{"a": "Analysis", "b": "Analyses", "same": false}
+{"a": "Throughput", "b": "Cycle time", "same": false}
+{"a": "Little's Law", "b": "Littles laws", "same": true}
+{"a": "CV", "b": "Curriculum vitae", "same": true}
+{"a": "Statistics", "b": "Statistic", "same": false}
+{"a": "Physics", "b": "Physic", "same": false}
+{"a": "Cash flow", "b": "Cash flow statement", "same": false}
+{"a": "Variability", "b": "Process variability", "same": false}
+{"a": "Working capital", "b": "Working capital cycle", "same": false}
+{"a": "Demand forecasting", "b": "Forecasting demand", "same": false}
+{"a": "A/B testing", "b": "AB tests", "same": false}
+{"a": "IT", "b": "Inventory turns", "same": true}
+{"a": "Python", "b": "Pythons", "same": true}
+{"a": "Bus", "b": "Bu", "same": false}
+{"a": "Status", "b": "Statu", "same": false}
+{"a": "PM", "b": "Product manager", "same": true}
+{"a": "PM", "b": "Project management", "same": true}
+{"a": "OEE", "b": "Overall equipment effectiveness", "same": true}
+{"a": "Lead time", "b": "Lead times", "same": true}
+{"a": "Safety stock", "b": "Safety stocks", "same": true}
+{"a": "Queueing theory", "b": "Queue theory", "same": false}
+{"a": "Regression", "b": "Linear regression", "same": false}
+{"a": "SVM", "b": "Support vector machine", "same": true}
+{"a": "ML", "b": "Machine learning", "same": true}
+{"a": "AI", "b": "Artificial intelligence", "same": true}

@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mindmesh design concepts</title>
+<style>
+/* ---------- Document chrome (neutral, so the concepts stand out) ---------- */
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #F4F5F7; color: #1F2430; font: 16px/1.55 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+.doc { max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; }
+.doc > header { max-width: 720px; margin-bottom: 56px; }
+.doc > header h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 12px; letter-spacing: -0.01em; }
+.doc > header p { margin: 0 0 10px; color: #4A5163; }
+.direction { margin-bottom: 88px; }
+.direction-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; margin-bottom: 28px; align-items: start; }
+@media (max-width: 860px) { .direction-head { grid-template-columns: 1fr; } }
+.direction-head h2 { font-size: 1.6rem; margin: 0 0 8px; letter-spacing: -0.01em; }
+.direction-head p { margin: 0 0 10px; color: #4A5163; max-width: 60ch; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+.swatch { border-radius: 10px; overflow: hidden; background: #fff; border: 1px solid #E2E4EA; font-size: 0.8rem; }
+.swatch span { display: block; height: 52px; }
+.swatch b, .swatch i { display: block; padding: 0 10px; font-style: normal; }
+.swatch b { padding-top: 8px; color: #1F2430; }
+.swatch i { padding-bottom: 8px; color: #6A7183; }
+.typespec { margin-top: 14px; font-size: 0.9rem; color: #4A5163; }
+.stage { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+.caption { font-size: 0.85rem; color: #6A7183; margin: 10px 4px 0; max-width: 56ch; }
+.fit { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 32px; }
+.fit h3 { font-size: 0.95rem; margin: 0 0 4px; }
+.fit p { margin: 0; font-size: 0.9rem; color: #4A5163; }
+.recommend { background: #fff; border: 1px solid #E2E4EA; border-radius: 14px; padding: 28px 32px; max-width: 820px; }
+.recommend h2 { margin: 0 0 10px; font-size: 1.4rem; }
+.recommend p { margin: 0 0 10px; color: #3A4152; }
+
+/* Shared mock frames */
+.phone { width: 320px; border-radius: 34px; padding: 10px; background: #1F2430; flex: none; }
+.phone > .screen { border-radius: 26px; overflow: hidden; min-height: 620px; }
+.desk { flex: 1 1 520px; min-width: 300px; max-width: 760px; border-radius: 14px; overflow: hidden; border: 1px solid #D9DCE3; background: #fff; }
+.desk-bar { height: 30px; background: #E9EBF0; display: flex; align-items: center; gap: 6px; padding: 0 12px; }
+.desk-bar i { width: 10px; height: 10px; border-radius: 50%; background: #C7CBD5; display: block; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid #2F6BFF; outline-offset: 2px; }
+
+/* =====================================================================
+   A. Highlighter: white page, indigo ink, marker-yellow evidence
+   ===================================================================== */
+.dA { --ink: #1B1A4B; --paper: #FFFFFF; --yellow: #FFE14D; --pink: #FF3E8A; --blue: #2F6BFF; --line: #E7E6F3; --soft: #F5F4FC;
+      font-family: "Avenir Next", Avenir, "Segoe UI", "Helvetica Neue", sans-serif; color: var(--ink); }
+.dA .screen, .dA .desk-body { background: var(--paper); }
+.dA .p { padding: 26px 22px 24px; }
+.dA .date { font-size: 0.85rem; font-weight: 600; color: #6B6A92; margin: 0 0 6px; }
+.dA h4 { font-size: 1.85rem; line-height: 1.08; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 22px; }
+.dA .ask { font-weight: 700; font-size: 0.95rem; margin: 0 0 10px; }
+.dA .times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 22px; }
+.dA .times button { border: 2px solid var(--ink); background: var(--paper); color: var(--ink); border-radius: 12px; padding: 12px 0; font-weight: 700; }
+.dA .times button[aria-pressed="true"] { background: var(--yellow); }
+.dA ol { list-style: none; counter-reset: s; padding: 0; margin: 0 0 20px; }
+.dA ol li { counter-increment: s; display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: baseline; padding: 11px 0; border-top: 1px solid var(--line); font-size: 0.95rem; }
+.dA ol li::before { content: counter(s); font-weight: 800; color: var(--blue); }
+.dA ol li small { color: #6B6A92; font-weight: 600; }
+.dA .go { width: 100%; border: 0; border-radius: 14px; background: var(--blue); color: #fff; font-weight: 700; font-size: 1.05rem; padding: 16px; }
+.dA .week { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 8px; font-size: 0.9rem; font-weight: 600; }
+.dA .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.dA .days span { aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; font-size: 0.72rem; font-weight: 700; color: #8A89AD; }
+.dA .days span.done { background: var(--ink); border-color: var(--ink); color: #fff; }
+.dA .win { margin-top: 22px; padding: 16px; background: var(--soft); border-radius: 14px; font-size: 0.92rem; }
+.dA .win strong { display: block; margin-bottom: 4px; }
+.dA mark { background: linear-gradient(100deg, transparent 0 2%, var(--yellow) 3% 96%, transparent 97%); color: inherit; padding: 0 3px; border-radius: 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.dA .desk-body { padding: 34px 36px 36px; }
+.dA .role { font-size: 2.1rem; line-height: 1.08; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 6px; max-width: 18ch; }
+.dA .sub { color: #6B6A92; font-weight: 600; margin: 0 0 26px; }
+.dA table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.dA th { text-align: left; font-size: 0.8rem; color: #6B6A92; font-weight: 600; padding: 0 12px 10px 0; }
+.dA td { padding: 16px 12px 16px 0; border-top: 1px solid var(--line); vertical-align: top; }
+.dA td:first-child { font-weight: 700; width: 24%; }
+.dA .q { display: block; margin-top: 4px; font-size: 0.85rem; color: #4A4975; }
+.dA .tag { display: inline-block; font-size: 0.78rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+.dA .tag.gap { background: var(--pink); color: var(--ink); }
+.dA .tag.ok { background: var(--blue); color: #fff; }
+.dA .tag.unk { border: 2px dashed #A9A8C8; color: #4A4975; padding: 1px 8px; }
+.dA .imp { font-weight: 700; }
+@media (max-width: 640px) { .dA .desk-body { padding: 24px 18px; } .dA th:nth-child(2), .dA td:nth-child(2) { display: none; } }
+
+/* =====================================================================
+   B. Mesh: each area owns a saturated colour field; skills form a mesh
+   ===================================================================== */
+.dB { --ink: #15132B; --today: #FF5C1A; --prep: #5B2EFF; --lib: #00A991; --surface: #FFFFFF; --tint: #F3F0FF; --muted: #6E6B85;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); }
+.dB .display { font-family: Futura, "Futura PT", "Century Gothic", "Trebuchet MS", sans-serif; font-weight: 700; }
+.dB .screen { background: var(--surface); }
+.dB .field { background: var(--today); color: var(--ink); padding: 30px 22px 72px; position: relative; }
+.dB .field p { margin: 0 0 8px; font-weight: 700; font-size: 0.9rem; }
+.dB .field h4 { margin: 0; font-size: 2.05rem; line-height: 1.02; letter-spacing: -0.01em; }
+.dB .sheet { background: var(--surface); margin-top: -44px; border-radius: 28px 28px 0 0; padding: 22px 22px 24px; position: relative; }
+.dB .seg { display: flex; background: #F1EFF6; border-radius: 999px; padding: 4px; margin-bottom: 20px; }
+.dB .seg button { flex: 1; border: 0; background: transparent; border-radius: 999px; padding: 10px 0; font-weight: 700; color: var(--ink); }
+.dB .seg button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.dB .task { display: flex; gap: 12px; align-items: center; padding: 12px 0; }
+.dB .task + .task { border-top: 1px solid #EEECF3; }
+.dB .dot { width: 34px; height: 34px; border-radius: 10px; flex: none; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 0.8rem; }
+.dB .task div { flex: 1; font-size: 0.93rem; }
+.dB .task small { display: block; color: var(--muted); }
+.dB .go { width: 100%; margin-top: 16px; border: 0; border-radius: 16px; background: var(--today); color: var(--ink); font-weight: 800; font-size: 1.05rem; padding: 17px; }
+.dB .mesh { margin-top: 20px; border-radius: 20px; background: var(--tint); padding: 14px 14px 8px; }
+.dB .mesh p { margin: 0 0 4px; font-size: 0.88rem; }
+.dB .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.75rem; color: var(--muted); padding-bottom: 6px; }
+.dB .legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; background: var(--c); border: 2px solid var(--b, var(--c)); }
+.dB .desk-body { background: var(--surface); }
+.dB .deskfield { background: var(--prep); color: #fff; padding: 30px 34px 34px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+.dB .deskfield h4 { margin: 0 0 6px; font-size: 2.2rem; line-height: 1.02; max-width: 16ch; }
+.dB .deskfield p { margin: 0; opacity: 0.9; font-weight: 600; }
+.dB .count { background: #fff; color: var(--prep); border-radius: 16px; padding: 12px 16px; font-weight: 700; font-size: 0.9rem; }
+.dB .count b { font-family: Futura, "Century Gothic", sans-serif; font-size: 1.6rem; display: block; line-height: 1; }
+.dB .rows { padding: 12px 34px 30px; }
+.dB .rowb { display: grid; grid-template-columns: 6px minmax(0, 1.1fr) minmax(0, 1.4fr) auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid #EEECF3; }
+.dB .bar { align-self: stretch; border-radius: 6px; background: var(--c); }
+.dB .rowb strong { display: block; }
+.dB .rowb small { color: var(--muted); font-size: 0.85rem; }
+.dB .act { border: 2px solid var(--ink); border-radius: 12px; padding: 8px 12px; font-weight: 700; font-size: 0.85rem; background: #fff; white-space: nowrap; }
+@media (max-width: 640px) { .dB .rowb { grid-template-columns: 6px 1fr; } .dB .rowb > :nth-child(3), .dB .rowb > :nth-child(4) { grid-column: 2; } .dB .deskfield, .dB .rows { padding-left: 18px; padding-right: 18px; } }
+
+/* =====================================================================
+   C. Coach: cool mint ground, chunky rounded type, a skills ladder
+   ===================================================================== */
+.dC { --ink: #0E1E5B; --ground: #E8FAF2; --tomato: #FF4A3D; --sun: #FFC83A; --sky: #4DB8FF; --white: #FFFFFF; --muted: #4F5B85;
+      font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Nunito", "Segoe UI", sans-serif; color: var(--ink); }
+.dC .screen, .dC .desk-body { background: var(--ground); }
+.dC .p { padding: 24px 18px 22px; }
+.dC .hello { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.dC .hello p { margin: 0; font-weight: 700; color: var(--muted); }
+.dC .countdown { background: var(--tomato); color: var(--ink); border-radius: 999px; padding: 6px 12px; font-weight: 800; font-size: 0.85rem; }
+.dC h4 { font-size: 1.75rem; line-height: 1.1; font-weight: 800; margin: 0 0 18px; }
+.dC .big { background: var(--white); border-radius: 26px; padding: 18px; border: 3px solid var(--ink); }
+.dC .big .ask { font-weight: 800; margin: 0 0 12px; }
+.dC .pills { display: flex; gap: 8px; margin-bottom: 16px; }
+.dC .pills button { flex: 1; border: 3px solid var(--ink); background: var(--white); color: var(--ink); border-radius: 999px; padding: 10px 0; font-weight: 800; }
+.dC .pills button[aria-pressed="true"] { background: var(--sun); }
+.dC .big ul { list-style: none; margin: 0 0 16px; padding: 0; }
+.dC .big li { display: flex; gap: 10px; align-items: center; padding: 7px 0; font-weight: 700; font-size: 0.95rem; }
+.dC .big li i { width: 26px; height: 26px; border-radius: 9px; flex: none; display: grid; place-items: center; font-style: normal; font-size: 0.8rem; color: #fff; }
+.dC .big li small { margin-left: auto; color: var(--muted); }
+.dC .go { width: 100%; border: 3px solid var(--ink); border-radius: 999px; background: var(--tomato); color: var(--ink); font-weight: 800; font-size: 1.1rem; padding: 14px; box-shadow: 0 5px 0 var(--ink); }
+.dC .weekc { margin-top: 12px; display: flex; gap: 6px; }
+.dC .weekc div { flex: 1; text-align: center; font-size: 0.72rem; font-weight: 800; color: var(--muted); }
+.dC .weekc div span { display: block; height: 30px; border-radius: 10px; background: #CFEEE0; margin-bottom: 5px; }
+.dC .weekc div.on span { background: var(--sky); }
+.dC .weekc div.today span { background: var(--white); border: 3px dashed var(--ink); }
+.dC .weektext { font-weight: 800; margin: 18px 0 0; font-size: 0.95rem; }
+.dC .desk-body { padding: 30px 32px 34px; }
+.dC .desk-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.dC .desk-top h4 { font-size: 2rem; margin: 0 0 4px; max-width: 17ch; }
+.dC .desk-top p { margin: 0; color: var(--muted); font-weight: 700; }
+.dC .ladder { display: grid; gap: 12px; }
+.dC .rung { background: var(--white); border-radius: 22px; padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 8px 20px; align-items: center; border: 3px solid transparent; }
+.dC .rung.first { border-color: var(--ink); }
+.dC .rung strong { font-size: 1.05rem; }
+.dC .rung p { margin: 2px 0 0; color: var(--muted); font-weight: 600; font-size: 0.9rem; }
+.dC .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.dC .steps span { height: 12px; border-radius: 6px; background: #E1E6F3; }
+.dC .steps span.f { background: var(--sky); }
+.dC .steplabel { grid-column: 2; font-size: 0.78rem; font-weight: 800; color: var(--muted); text-align: right; margin-top: -4px; }
+@media (max-width: 640px) { .dC .rung { grid-template-columns: 1fr; } .dC .steplabel { grid-column: 1; text-align: left; } .dC .desk-body { padding: 22px 16px; } }
+
+/* =====================================================================
+   D. Atelier: porcelain, graphite, one sapphire accent, brass hairlines
+   ===================================================================== */
+.dD { --ink: #22252B; --pewter: #6A6F7B; --porcelain: #FBFBFC; --sapphire: #1E3A8A; --brass: #8C6A2F; --rule: #E3E5EA; --wash: #F2F4F8;
+      font-family: Optima, "Optima Nova", Candara, "Segoe UI", "Helvetica Neue", sans-serif; color: var(--ink);
+      font-variant-numeric: tabular-nums lining-nums; }
+.dD .screen, .dD .desk-body { background: var(--porcelain); }
+.dD .p { padding: 34px 26px 28px; }
+.dD .date { font-size: 0.82rem; color: var(--pewter); margin: 0 0 14px; letter-spacing: 0.01em; }
+.dD h4 { font-weight: 400; font-size: 2rem; line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 34px; }
+.dD .ask { font-size: 0.85rem; color: var(--pewter); margin: 0 0 10px; }
+.dD .times { display: flex; gap: 24px; margin-bottom: 30px; border-bottom: 1px solid var(--rule); }
+.dD .times button { background: none; border: 0; padding: 0 0 10px; font-size: 1rem; color: var(--pewter); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.dD .times button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--sapphire); font-weight: 600; }
+.dD ul { list-style: none; padding: 0; margin: 0 0 30px; }
+.dD ul li { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--rule); font-size: 0.97rem; }
+.dD ul li span:last-child { color: var(--pewter); white-space: nowrap; }
+.dD .go { width: 100%; border: 0; border-radius: 6px; background: var(--sapphire); color: #fff; font-size: 1rem; font-weight: 600; letter-spacing: 0.01em; padding: 16px; }
+.dD .weekline { margin-top: 30px; display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--pewter); margin-bottom: 10px; }
+.dD .ticks { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.dD .ticks span { height: 3px; background: var(--rule); border-radius: 2px; }
+.dD .ticks span.on { background: var(--sapphire); }
+.dD .ticks span.today { background: var(--brass); }
+.dD .note { margin-top: 26px; padding-left: 14px; border-left: 1px solid var(--brass); font-size: 0.9rem; line-height: 1.5; }
+.dD .note em { font-style: normal; color: var(--pewter); display: block; margin-top: 2px; }
+.dD .desk-body { padding: 46px 48px 48px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr); gap: 44px; }
+.dD .aside h5 { font-weight: 400; font-size: 1.9rem; line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 12px; }
+.dD .aside p { margin: 0 0 22px; color: var(--pewter); font-size: 0.92rem; }
+.dD .aside dl { margin: 0; font-size: 0.9rem; }
+.dD .aside dt { color: var(--pewter); }
+.dD .aside dd { margin: 0 0 14px; }
+.dD .skill { padding: 0 0 22px; margin-bottom: 22px; border-bottom: 1px solid var(--rule); }
+.dD .skill:last-child { border-bottom: 0; margin-bottom: 0; }
+.dD .skill-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.dD .skill-top strong { font-weight: 600; font-size: 1.02rem; }
+.dD .state { font-size: 0.85rem; color: var(--pewter); white-space: nowrap; }
+.dD .state.gap { color: var(--sapphire); font-weight: 600; }
+.dD .scale { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 10px 0 10px; max-width: 220px; }
+.dD .scale span { height: 3px; background: var(--rule); }
+.dD .scale span.f { background: var(--sapphire); }
+.dD .why { margin: 0; font-size: 0.9rem; color: var(--pewter); }
+.dD blockquote { margin: 10px 0 0; padding-left: 12px; border-left: 1px solid var(--brass); font-size: 0.9rem; font-style: italic; }
+.dD .next { display: inline-block; margin-top: 10px; font-size: 0.9rem; color: var(--sapphire); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+@media (max-width: 700px) { .dD .desk-body { grid-template-columns: 1fr; padding: 28px 20px; gap: 28px; } }
+
+/* =====================================================================
+   E. Pantry: palette sampled from snack packaging (mint, cobalt, sunflower)
+   ===================================================================== */
+.dE { --cobalt: #2B3FD6; --mint: #74D690; --sun: #F7D23A; --chili: #D9362B; --bubble: #F6B8CB; --sky: #CFE0F2; --sage: #B5CFAE; --ink: #141A4D; --white: #FFFFFF;
+      font-family: "Avenir Next", Avenir, "Segoe UI", "Helvetica Neue", sans-serif; color: var(--ink); }
+.dE .display { font-family: "Arial Rounded MT Bold", ui-rounded, "SF Pro Rounded", "Avenir Next", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+.dE .screen { background: var(--white); }
+.dE .band { background: var(--mint); padding: 28px 22px 26px; }
+.dE .band p { margin: 0 0 10px; font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+.dE .band h4 { margin: 0; color: var(--cobalt); font-size: 2.15rem; line-height: 1; }
+.dE .body { padding: 20px 20px 22px; }
+.dE .times { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+.dE .times button { border: 0; border-radius: 14px; padding: 13px 0; font-weight: 800; background: var(--sky); color: var(--cobalt); }
+.dE .times button[aria-pressed="true"] { background: var(--cobalt); color: var(--white); }
+.dE .pack { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; background: var(--sun); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; }
+.dE .pack strong { display: block; color: var(--cobalt); font-size: 1rem; }
+.dE .pack small { color: var(--ink); font-weight: 600; }
+.dE .pack b { background: var(--cobalt); color: var(--sun); border-radius: 10px; padding: 6px 9px; font-size: 0.82rem; }
+.dE .go { width: 100%; margin-top: 10px; border: 0; border-radius: 16px; background: var(--cobalt); color: var(--white); font-weight: 800; font-size: 1.08rem; padding: 16px; }
+.dE .week { margin-top: 18px; background: var(--bubble); border-radius: 16px; padding: 14px; }
+.dE .week p { margin: 0 0 10px; font-weight: 700; font-size: 0.9rem; }
+.dE .dots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.dE .dots span { aspect-ratio: 1; border-radius: 50%; background: var(--white); display: grid; place-items: center; font-size: 0.7rem; font-weight: 800; color: var(--ink); }
+.dE .dots span.on { background: var(--cobalt); color: var(--white); }
+.dE .desk-body { background: var(--white); }
+.dE .deskband { background: var(--mint); padding: 30px 34px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+.dE .deskband h4 { margin: 0 0 6px; color: var(--cobalt); font-size: 2.2rem; line-height: 1.02; max-width: 15ch; }
+.dE .deskband p { margin: 0; font-weight: 700; }
+.dE .badge-chili { background: var(--chili); color: var(--white); border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 0.88rem; }
+.dE .shelf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 22px 34px 32px; }
+.dE .tile { border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.dE .tile .label { background: var(--sun); border-radius: 12px; padding: 10px 12px; }
+.dE .tile .label strong { display: block; color: var(--cobalt); font-size: 1.02rem; line-height: 1.15; }
+.dE .tile .label small { font-weight: 700; color: var(--ink); }
+.dE .tile p { margin: 0; font-size: 0.9rem; color: var(--ink); }
+.dE .tile .state { align-self: flex-start; background: var(--white); color: var(--ink); border-radius: 999px; padding: 4px 10px; font-weight: 800; font-size: 0.78rem; }
+.dE .tile .state.gap { background: var(--chili); color: var(--white); }
+.dE .tile .state.ok { background: var(--cobalt); color: var(--white); }
+.dE .tile .next { font-weight: 800; color: var(--cobalt); font-size: 0.9rem; }
+@media (max-width: 640px) { .dE .shelf { grid-template-columns: 1fr; padding: 18px; } .dE .deskband { padding: 24px 18px; } }
+
+/* =====================================================================
+   F. Aura: frosted glass over a soft mint/sky/peach glow, one orange accent
+   ===================================================================== */
+.dF { --ink: #1D2321; --grey: #56605B; --orange: #F2621A; --mint: #D3EADC; --sky: #D2E5EE; --peach: #F7CDB0; --sage: #BFDDB4; --frost: rgba(255,255,255,0.62); --edge: rgba(255,255,255,0.9);
+      font-family: "Avenir Next", Avenir, "Century Gothic", "Segoe UI", sans-serif; color: var(--ink); }
+.dF .screen, .dF .desk-body { background:
+      radial-gradient(120% 60% at 0% 0%, #CFE6EC 0%, transparent 60%),
+      radial-gradient(90% 55% at 100% 8%, #DCEFD6 0%, transparent 62%),
+      radial-gradient(110% 70% at 70% 100%, #FBE3D2 0%, transparent 65%),
+      #F4F7F3; }
+.dF .p { padding: 26px 18px 22px; }
+.dF .who { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.dF .avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(140deg, #F7CDB0, #BFDDB4); display: grid; place-items: center; font-weight: 600; border: 3px solid var(--edge); }
+.dF .who strong { display: block; font-weight: 500; font-size: 1.05rem; }
+.dF .who span { color: var(--grey); font-size: 0.85rem; }
+.dF .bell { margin-left: auto; width: 42px; height: 42px; border-radius: 50%; background: var(--frost); border: 1px solid var(--edge); display: grid; place-items: center; }
+.dF .glass { background: var(--frost); border: 1px solid var(--edge); border-radius: 26px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(60, 90, 80, 0.08); }
+.dF .ask { padding: 14px 16px; color: var(--grey); font-size: 0.95rem; margin-bottom: 12px; border-radius: 20px; }
+.dF .hero { position: relative; padding: 18px; margin-bottom: 12px; overflow: hidden; }
+.dF .hero::before { content: ""; position: absolute; inset: -30% -10% auto 35%; height: 160%; background: radial-gradient(closest-side, rgba(247,205,176,0.75), transparent), radial-gradient(closest-side at 30% 70%, rgba(191,221,180,0.7), transparent); z-index: 0; }
+.dF .hero > * { position: relative; z-index: 1; }
+.dF .hero-top { display: flex; gap: 14px; align-items: center; }
+.dF .tile { width: 52px; height: 52px; border-radius: 16px; flex: none; display: grid; place-items: center; background: linear-gradient(150deg, #F7CDB0 0%, #D2E5EE 55%, #BFDDB4 100%); }
+.dF h4 { margin: 0; font-weight: 500; font-size: 1.35rem; line-height: 1.15; letter-spacing: -0.01em; }
+.dF .hero p { margin: 4px 0 0; color: var(--grey); font-size: 0.9rem; }
+.dF .times { display: flex; gap: 6px; margin: 16px 0 14px; }
+.dF .times button { flex: 1; border: 1px solid var(--edge); background: rgba(255,255,255,0.55); border-radius: 14px; padding: 10px 0; color: var(--ink); font-weight: 500; }
+.dF .times button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.dF .go { width: 100%; border: 0; border-radius: 16px; background: var(--orange); color: var(--ink); font-weight: 600; font-size: 1rem; padding: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.dF .pair { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.dF .mini { padding: 14px; border-radius: 22px; min-height: 138px; display: flex; flex-direction: column; }
+.dF .mini .row1 { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: auto; min-height: 40px; }
+.dF .mini .ic { width: 40px; height: 40px; border-radius: 13px; background: rgba(255,255,255,0.7); display: grid; place-items: center; }
+.dF .mini strong { font-weight: 500; font-size: 1.02rem; margin-top: 16px; display: block; }
+.dF .mini span { color: var(--grey); font-size: 0.82rem; }
+.dF .week { margin-top: 12px; padding: 14px 16px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; }
+.dF .week .ticks { display: flex; gap: 5px; }
+.dF .week .ticks i { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #A9B6AF; display: block; }
+.dF .week .ticks i.on { background: var(--ink); border-color: var(--ink); }
+.dF .week .ticks i.today { border-color: var(--orange); border-width: 2.5px; }
+.dF .arrow { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--edge); background: rgba(255,255,255,0.6); display: grid; place-items: center; flex: none; }
+.dF svg { stroke: var(--ink); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.dF .desk-body { padding: 34px 36px 38px; }
+.dF .dhead { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.dF .dhead h5 { margin: 0 0 6px; font-weight: 500; font-size: 2rem; line-height: 1.1; letter-spacing: -0.015em; max-width: 17ch; }
+.dF .dhead p { margin: 0; color: var(--grey); }
+.dF .chip { border-radius: 999px; padding: 9px 14px; background: var(--frost); border: 1px solid var(--edge); font-size: 0.9rem; }
+.dF .chip b { color: var(--ink); }
+.dF .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.dF .skill { padding: 18px; border-radius: 24px; display: flex; flex-direction: column; gap: 8px; }
+.dF .skill .top { display: flex; flex-direction: column-reverse; align-items: flex-start; gap: 10px; }
+.dF .skill .state { font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.8); white-space: nowrap; }
+.dF .skill .state.gap { background: var(--orange); color: var(--ink); }
+.dF .skill strong { font-weight: 500; font-size: 1.1rem; }
+.dF .skill p { margin: 0; font-size: 0.9rem; color: var(--ink); }
+.dF .skill .meta { color: var(--grey); font-size: 0.85rem; }
+.dF .skill .bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-weight: 500; font-size: 0.92rem; }
+.dF .skill.t-peach { background: linear-gradient(160deg, rgba(255,255,255,0.75), rgba(247,205,176,0.55)); border: 1px solid var(--edge); }
+.dF .skill.t-sky { background: linear-gradient(160deg, rgba(255,255,255,0.75), rgba(210,229,238,0.7)); border: 1px solid var(--edge); }
+.dF .skill.t-sage { background: linear-gradient(160deg, rgba(255,255,255,0.75), rgba(191,221,180,0.6)); border: 1px solid var(--edge); }
+.dF .skill .meta, .dF .skill p { text-wrap: pretty; }
+@media (max-width: 640px) { .dF .grid { grid-template-columns: 1fr; } .dF .desk-body { padding: 24px 16px; } }
+</style>
+</head>
+<body>
+<div class="doc">
+  <header>
+    <h1>Six visual directions for Mindmesh</h1>
+    <p>Each direction is shown on the same two screens: <strong>Today</strong> on a phone, where retention is won or lost, and the <strong>gap report</strong> on desktop, which is the proposed front door for new users. Directions A to C use bright, saturated colour on a clean base. Direction D is the clean, minimal, premium alternative, E uses a palette sampled from the snack packaging you shared, and F takes its cues from the frosted-glass app photo. All six share the same content and structure from the UX research; only the visual language changes.</p>
+    <p>All text and colour pairs meet WCAG AA contrast, and no state is shown by colour alone. The fonts are ones already installed on Mac and Windows, so this page renders exactly as intended. A production build would license the final typeface.</p>
+  </header>
+
+  <!-- ============================ A ============================ -->
+  <section class="direction" aria-labelledby="a-h">
+    <div class="direction-head">
+      <div>
+        <h2 id="a-h">A. Highlighter</h2>
+        <p>The product's promise is that every claim is backed by evidence, so the brand is the act of highlighting it. A white page and deep indigo ink keep everything calm. Marker yellow appears in only one place: on the evidence itself, whether that's a quote from your resume or a sentence in your textbook. Blue means action and proven skills, and pink means a gap.</p>
+        <p>The bold element is the highlight. Everything else stays quiet.</p>
+      </div>
+      <div>
+        <div class="swatches">
+          <div class="swatch"><span style="background:#1B1A4B"></span><b>Indigo ink</b><i>#1B1A4B</i></div>
+          <div class="swatch"><span style="background:#FFE14D"></span><b>Marker yellow</b><i>#FFE14D</i></div>
+          <div class="swatch"><span style="background:#2F6BFF"></span><b>Action blue</b><i>#2F6BFF</i></div>
+          <div class="swatch"><span style="background:#FF3E8A"></span><b>Gap pink</b><i>#FF3E8A</i></div>
+          <div class="swatch"><span style="background:#F5F4FC"></span><b>Mist</b><i>#F5F4FC</i></div>
+        </div>
+        <p class="typespec">Type: one family throughout, Avenir Next, set heavy and tight for headlines, regular for reading. Production option: a licensed geometric grotesk with a true 800 weight.</p>
+      </div>
+    </div>
+
+    <div class="stage dA">
+      <div>
+        <div class="phone"><div class="screen"><div class="p">
+          <p class="date">Wednesday 14 October</p>
+          <h4>9 days until your Amazon interview</h4>
+          <p class="ask">How much time do you have right now?</p>
+          <div class="times" role="group" aria-label="Session length">
+            <button aria-pressed="false">5 min</button>
+            <button aria-pressed="true">15 min</button>
+            <button aria-pressed="false">30 min</button>
+          </div>
+          <ol aria-label="Your 15-minute session">
+            <li>Review Little's Law <small>4 min</small></li>
+            <li>Practise a stakeholder story <small>6 min</small></li>
+            <li>One mock question on program risk <small>5 min</small></li>
+          </ol>
+          <button class="go">Start 15-minute session</button>
+          <div class="week"><span>This week</span><span>2 of 3 sessions</span></div>
+          <div class="days" aria-label="Practised Monday and Tuesday">
+            <span class="done">M</span><span class="done">T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div class="win">
+            <strong>Inventory optimisation is now developing</strong>
+            <mark>You solved 2 of 3 reorder-point problems</mark>, including one without hints.
+          </div>
+        </div></div></div>
+        <p class="caption">The time picker answers the real question a busy professional has. The session list changes to fit the choice.</p>
+      </div>
+
+      <div class="desk">
+        <div class="desk-bar"><i></i><i></i><i></i></div>
+        <div class="desk-body">
+          <h4 class="role">Senior Program Manager, Supply Chain</h4>
+          <p class="sub">Amazon. Interview on 23 October.</p>
+          <table>
+            <thead><tr><th scope="col">Skill</th><th scope="col">How much it matters</th><th scope="col">What your resume shows</th><th scope="col">Next step</th></tr></thead>
+            <tbody>
+              <tr><td>Program risk management</td><td class="imp">Critical</td><td><span class="tag gap">Not on your resume yet</span><span class="q">The job asks you to "own risk registers across launches".</span></td><td>Write one true story about a risk you caught early</td></tr>
+              <tr><td>Financial acumen</td><td class="imp">High</td><td><span class="tag gap">Gap in quiz answers</span><span class="q">You missed 3 of 4 working-capital questions.</span></td><td>Learn working capital, 20 min</td></tr>
+              <tr><td>Stakeholder influence</td><td class="imp">High</td><td><span class="tag unk">Not enough answers yet</span><span class="q"><mark>Aligned 6 regional leads on a single S&amp;OP calendar</mark></span></td><td>Rehearse it with a mock follow-up</td></tr>
+              <tr><td>Inventory optimisation</td><td class="imp">High</td><td><span class="tag ok">Strong</span><span class="q"><mark>Cut safety stock 18% across 4 distribution centres</mark></span></td><td>Keep it fresh with one review a week</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="fit">
+      <div><h3>For acquisition</h3><p>The highlighted resume quotes make "evidence, not vibes" obvious in a screenshot. That's ideal for the landing page and social posts.</p></div>
+      <div><h3>For retention</h3><p>The weekly row and a single highlighted win give a sense of progress without streak guilt.</p></div>
+      <div><h3>Risk</h3><p>It's the most restrained of the three. Bold comes from type and one colour, so it can look serious rather than exciting.</p></div>
+    </div>
+  </section>
+
+  <!-- ============================ B ============================ -->
+  <section class="direction" aria-labelledby="b-h">
+    <div class="direction-head">
+      <div>
+        <h2 id="b-h">B. Mesh</h2>
+        <p>Every area of the product owns one saturated colour field: tangerine for Today, violet for Prep, teal for Library. You always know where you are from the colour at the top of the screen. White sheets slide over the colour to hold the content.</p>
+        <p>The bold element is the skill mesh. It's a small network of the concepts and skills you're working on, and each node fills in as you prove it. It turns the PRD's knowledge graph into something people want to complete, and it gives the brand name a visual meaning.</p>
+      </div>
+      <div>
+        <div class="swatches">
+          <div class="swatch"><span style="background:#FF5C1A"></span><b>Today tangerine</b><i>#FF5C1A</i></div>
+          <div class="swatch"><span style="background:#5B2EFF"></span><b>Prep violet</b><i>#5B2EFF</i></div>
+          <div class="swatch"><span style="background:#00A991"></span><b>Library teal</b><i>#00A991</i></div>
+          <div class="swatch"><span style="background:#15132B"></span><b>Night ink</b><i>#15132B</i></div>
+          <div class="swatch"><span style="background:#F3F0FF"></span><b>Lilac tint</b><i>#F3F0FF</i></div>
+        </div>
+        <p class="typespec">Type: Futura bold for headlines and numbers, set large; Helvetica Neue for everything you read. The geometric display face echoes the nodes of the mesh.</p>
+      </div>
+    </div>
+
+    <div class="stage dB">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="field">
+            <p>Wednesday. Amazon interview in 9 days.</p>
+            <h4 class="display">Your 15 minutes today</h4>
+          </div>
+          <div class="sheet">
+            <div class="seg" role="group" aria-label="Session length">
+              <button aria-pressed="false">5 min</button><button aria-pressed="true">15 min</button><button aria-pressed="false">30 min</button>
+            </div>
+            <div class="task"><span class="dot" style="background:#00A991;color:#15132B">4m</span><div>Review Little's Law<small>From Factory Physics, p. 232</small></div></div>
+            <div class="task"><span class="dot" style="background:#5B2EFF">6m</span><div>Practise a stakeholder story<small>For your Amazon prep</small></div></div>
+            <div class="task"><span class="dot" style="background:#FF5C1A;color:#15132B">5m</span><div>One mock question<small>Program risk</small></div></div>
+            <button class="go">Start session</button>
+            <div class="mesh">
+              <p><strong>Your skill mesh</strong></p>
+              <svg viewBox="0 0 260 130" width="100%" role="img" aria-label="Skill mesh: 2 skills strong, 2 developing, 2 not started">
+                <g stroke="#C9C1F2" stroke-width="2">
+                  <line x1="40" y1="40" x2="110" y2="28"/><line x1="110" y1="28" x2="185" y2="50"/><line x1="185" y1="50" x2="228" y2="98"/>
+                  <line x1="40" y1="40" x2="78" y2="100"/><line x1="78" y1="100" x2="150" y2="104"/><line x1="150" y1="104" x2="228" y2="98"/>
+                  <line x1="110" y1="28" x2="150" y2="104"/><line x1="185" y1="50" x2="150" y2="104"/>
+                </g>
+                <circle cx="40" cy="40" r="13" fill="#5B2EFF"/><circle cx="110" cy="28" r="13" fill="#5B2EFF"/>
+                <circle cx="185" cy="50" r="12" fill="#FFFFFF" stroke="#5B2EFF" stroke-width="4"/>
+                <circle cx="78" cy="100" r="12" fill="#FFFFFF" stroke="#5B2EFF" stroke-width="4"/>
+                <circle cx="150" cy="104" r="11" fill="#FFFFFF" stroke="#B5ADD9" stroke-width="3" stroke-dasharray="4 3"/>
+                <circle cx="228" cy="98" r="11" fill="#FFFFFF" stroke="#B5ADD9" stroke-width="3" stroke-dasharray="4 3"/>
+              </svg>
+              <div class="legend"><span style="--c:#5B2EFF">Strong</span><span style="--c:#fff;--b:#5B2EFF">Developing</span><span style="--c:#fff;--b:#B5ADD9">Not started</span></div>
+            </div>
+          </div>
+        </div></div>
+        <p class="caption">Tangerine marks Today. The mesh shows every session filling in another node, so returning has a visible payoff.</p>
+      </div>
+
+      <div class="desk">
+        <div class="desk-bar"><i></i><i></i><i></i></div>
+        <div class="desk-body">
+          <div class="deskfield">
+            <div>
+              <h4 class="display">Senior Program Manager, Supply Chain</h4>
+              <p>Amazon. Interview on 23 October.</p>
+            </div>
+            <div class="count"><b>2</b>gaps to close first</div>
+          </div>
+          <div class="rows">
+            <div class="rowb" style="--c:#FF3E6C"><span class="bar"></span><div><strong>Program risk management</strong><small>Critical to the role</small></div><small>Not on your resume yet. The job asks you to own risk registers across launches.</small><span class="act">Write the story</span></div>
+            <div class="rowb" style="--c:#FF3E6C"><span class="bar"></span><div><strong>Financial acumen</strong><small>High importance</small></div><small>You missed 3 of 4 working-capital questions.</small><span class="act">Learn, 20 min</span></div>
+            <div class="rowb" style="--c:#B5ADD9"><span class="bar"></span><div><strong>Stakeholder influence</strong><small>High importance</small></div><small>Not enough answers yet. Your resume shows one good example.</small><span class="act">Rehearse</span></div>
+            <div class="rowb" style="--c:#00A991"><span class="bar"></span><div><strong>Inventory optimisation</strong><small>High importance</small></div><small>Strong. Proven on your resume and in 5 of 6 answers.</small><span class="act">Keep fresh</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fit">
+      <div><h3>For acquisition</h3><p>The most visually distinctive of the three. The colour fields and the mesh make a recognisable brand in a crowded "AI study tool" market.</p></div>
+      <div><h3>For retention</h3><p>Completing the mesh is a strong, honest progress loop. Nodes only fill from real answers.</p></div>
+      <div><h3>Risk</h3><p>Three area colours need discipline. If they leak into buttons and badges everywhere, the interface gets noisy.</p></div>
+    </div>
+  </section>
+
+  <!-- ============================ C ============================ -->
+  <section class="direction" aria-labelledby="c-h">
+    <div class="direction-head">
+      <div>
+        <h2 id="c-h">C. Coach</h2>
+        <p>A friendly, energetic coach for an anxious moment. A cool mint ground, navy ink and chunky rounded type lower the stress of interview prep. Tomato red is the "go" colour, sunflower marks your choice, and sky blue fills your progress.</p>
+        <p>The bold element is the ladder. Each skill is a rung with four steps from "not started" to "interview ready", and the most important rung is outlined. Buttons are pressable, with a solid offset base, so the product feels physical and encouraging.</p>
+      </div>
+      <div>
+        <div class="swatches">
+          <div class="swatch"><span style="background:#FF4A3D"></span><b>Go tomato</b><i>#FF4A3D</i></div>
+          <div class="swatch"><span style="background:#FFC83A"></span><b>Sunflower</b><i>#FFC83A</i></div>
+          <div class="swatch"><span style="background:#4DB8FF"></span><b>Progress sky</b><i>#4DB8FF</i></div>
+          <div class="swatch"><span style="background:#0E1E5B"></span><b>Navy ink</b><i>#0E1E5B</i></div>
+          <div class="swatch"><span style="background:#E8FAF2"></span><b>Mint ground</b><i>#E8FAF2</i></div>
+        </div>
+        <p class="typespec">Type: one rounded family, SF Pro Rounded on Apple devices, heavy for headlines and buttons. Production option: a licensed rounded sans so it looks the same on Windows and Android.</p>
+      </div>
+    </div>
+
+    <div class="stage dC">
+      <div>
+        <div class="phone"><div class="screen"><div class="p">
+          <div class="hello"><p>Hi Pouravi</p><span class="countdown">9 days to go</span></div>
+          <h4>Ready for today's practice?</h4>
+          <div class="big">
+            <p class="ask">I have</p>
+            <div class="pills" role="group" aria-label="Session length">
+              <button aria-pressed="false">5 min</button><button aria-pressed="true">15 min</button><button aria-pressed="false">30 min</button>
+            </div>
+            <ul>
+              <li><i style="background:#4DB8FF;color:#0E1E5B">1</i>Little's Law review<small>4m</small></li>
+              <li><i style="background:#FF4A3D;color:#0E1E5B">2</i>Stakeholder story<small>6m</small></li>
+              <li><i style="background:#0E1E5B">3</i>Mock question<small>5m</small></li>
+            </ul>
+            <button class="go">Let's go</button>
+          </div>
+          <p class="weektext">2 of 3 sessions this week</p>
+          <div class="weekc" aria-label="Practised Monday and Tuesday; today is Wednesday">
+            <div class="on"><span></span>M</div>
+            <div class="on"><span></span>T</div>
+            <div class="today"><span></span>W</div>
+            <div><span></span>T</div>
+            <div><span></span>F</div>
+            <div><span></span>S</div>
+            <div><span></span>S</div>
+          </div>
+        </div></div></div>
+        <p class="caption">Warm, direct copy and pressable buttons make starting feel easy on a stressful day.</p>
+      </div>
+
+      <div class="desk">
+        <div class="desk-bar"><i></i><i></i><i></i></div>
+        <div class="desk-body">
+          <div class="desk-top">
+            <div>
+              <h4>Senior Program Manager, Supply Chain</h4>
+              <p>Amazon. Interview on 23 October.</p>
+            </div>
+            <span class="countdown" style="background:#FF4A3D;color:#0E1E5B;border-radius:999px;padding:8px 14px;font-weight:800">Start with risk management</span>
+          </div>
+          <div class="ladder">
+            <div class="rung first"><div><strong>Program risk management</strong><p>Critical. Not on your resume yet. Write one true story about a risk you caught early.</p></div><div class="steps" aria-hidden="true"><span></span><span></span><span></span><span></span></div><span class="steplabel">Not started</span></div>
+            <div class="rung"><div><strong>Financial acumen</strong><p>High. You missed 3 of 4 working-capital questions. Learn it in 20 minutes.</p></div><div class="steps" aria-hidden="true"><span class="f"></span><span></span><span></span><span></span></div><span class="steplabel">Learning</span></div>
+            <div class="rung"><div><strong>Stakeholder influence</strong><p>High. One good resume example. Rehearse it with a follow-up.</p></div><div class="steps" aria-hidden="true"><span class="f"></span><span class="f"></span><span></span><span></span></div><span class="steplabel">Practising</span></div>
+            <div class="rung"><div><strong>Inventory optimisation</strong><p>High. Proven on your resume and in 5 of 6 answers.</p></div><div class="steps" aria-hidden="true"><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span></div><span class="steplabel">Interview ready</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fit">
+      <div><h3>For acquisition</h3><p>The most approachable of the three. It suits students and career switchers as well as professionals.</p></div>
+      <div><h3>For retention</h3><p>The ladder gives four clear, reachable steps per skill, which is easier to move than a single score.</p></div>
+      <div><h3>Risk</h3><p>Playful styling can undercut trust with senior professionals. The copy and data must stay precise.</p></div>
+    </div>
+  </section>
+
+
+  <!-- ============================ D ============================ -->
+  <section class="direction" aria-labelledby="d-h">
+    <div class="direction-head">
+      <div>
+        <h2 id="d-h">D. Atelier</h2>
+        <p>Quiet, precise and expensive-feeling, like a well-made notebook or a private banking app. Porcelain white and graphite carry almost everything. A single deep sapphire marks the one thing you should act on, and fine brass rules appear only beside evidence: your own resume line, or a win you've earned.</p>
+        <p>The premium feel comes from restraint, not decoration. There's generous space, light display type, figures that line up, and status written in words instead of coloured pills. Progress is a slim four-step scale, closer to a watch dial than a game.</p>
+      </div>
+      <div>
+        <div class="swatches">
+          <div class="swatch"><span style="background:#22252B"></span><b>Graphite</b><i>#22252B</i></div>
+          <div class="swatch"><span style="background:#1E3A8A"></span><b>Sapphire</b><i>#1E3A8A</i></div>
+          <div class="swatch"><span style="background:#8C6A2F"></span><b>Brass</b><i>#8C6A2F</i></div>
+          <div class="swatch"><span style="background:#6A6F7B"></span><b>Pewter</b><i>#6A6F7B</i></div>
+          <div class="swatch"><span style="background:#FBFBFC"></span><b>Porcelain</b><i>#FBFBFC</i></div>
+        </div>
+        <p class="typespec">Type: one humanist family, Optima, at regular weight for large headlines and semibold only for names and actions. Numbers use tabular figures so minutes and dates align. Production option: a licensed humanist sans with a light display cut.</p>
+      </div>
+    </div>
+
+    <div class="stage dD">
+      <div>
+        <div class="phone"><div class="screen"><div class="p">
+          <p class="date">Wednesday 14 October</p>
+          <h4>Nine days until your Amazon interview.</h4>
+          <p class="ask">Time you have now</p>
+          <div class="times" role="group" aria-label="Session length">
+            <button aria-pressed="false">5 min</button>
+            <button aria-pressed="true">15 min</button>
+            <button aria-pressed="false">30 min</button>
+          </div>
+          <ul aria-label="Your 15-minute session">
+            <li><span>Review Little's Law</span><span>4 min</span></li>
+            <li><span>Practise a stakeholder story</span><span>6 min</span></li>
+            <li><span>Mock question on program risk</span><span>5 min</span></li>
+          </ul>
+          <button class="go">Begin session</button>
+          <div class="weekline"><span>This week</span><span>2 of 3 sessions</span></div>
+          <div class="ticks" aria-label="Practised Monday and Tuesday; today is Wednesday">
+            <span class="on"></span><span class="on"></span><span class="today"></span><span></span><span></span><span></span><span></span>
+          </div>
+          <p class="note">Inventory optimisation is now developing.<em>2 of 3 reorder-point problems solved, one without hints.</em></p>
+        </div></div></div>
+        <p class="caption">Nothing competes with the session. The only colour is the selected time, the action, and the days you practised.</p>
+      </div>
+
+      <div class="desk">
+        <div class="desk-bar"><i></i><i></i><i></i></div>
+        <div class="desk-body">
+          <div class="aside">
+            <h5>Senior Program Manager, Supply Chain</h5>
+            <p>Amazon</p>
+            <dl>
+              <dt>Interview</dt><dd>23 October, in 9 days</dd>
+              <dt>Close first</dt><dd>Program risk, financial acumen</dd>
+              <dt>Already proven</dt><dd>Inventory optimisation</dd>
+            </dl>
+          </div>
+          <div>
+            <div class="skill">
+              <div class="skill-top"><strong>Program risk management</strong><span class="state gap">Critical gap</span></div>
+              <div class="scale" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+              <p class="why">Not on your resume yet. The role asks you to own risk registers across launches.</p>
+              <span class="next">Write one true story about a risk you caught early</span>
+            </div>
+            <div class="skill">
+              <div class="skill-top"><strong>Financial acumen</strong><span class="state gap">Gap</span></div>
+              <div class="scale" aria-hidden="true"><span class="f"></span><span></span><span></span><span></span></div>
+              <p class="why">You missed 3 of 4 working-capital questions.</p>
+              <span class="next">Learn working capital, 20 min</span>
+            </div>
+            <div class="skill">
+              <div class="skill-top"><strong>Stakeholder influence</strong><span class="state">Not enough answers yet</span></div>
+              <div class="scale" aria-hidden="true"><span class="f"></span><span class="f"></span><span></span><span></span></div>
+              <blockquote>Aligned 6 regional leads on a single S&amp;OP calendar</blockquote>
+            </div>
+            <div class="skill">
+              <div class="skill-top"><strong>Inventory optimisation</strong><span class="state">Interview ready</span></div>
+              <div class="scale" aria-hidden="true"><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span></div>
+              <blockquote>Cut safety stock 18% across 4 distribution centres</blockquote>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fit">
+      <div><h3>For acquisition</h3><p>Signals seriousness and privacy to senior professionals, the first target segment. It reads as a tool you'd trust with a resume.</p></div>
+      <div><h3>For retention</h3><p>Calm screens suit a stressful week. The slim scale and brass-marked wins reward progress without noise.</p></div>
+      <div><h3>Risk</h3><p>Restraint can feel cold or forgettable. It depends on excellent type, spacing and copy, and it's the least "bold and bright" of the four.</p></div>
+    </div>
+  </section>
+
+
+  <!-- ============================ E ============================ -->
+  <section class="direction" aria-labelledby="e-h">
+    <div class="direction-head">
+      <div>
+        <h2 id="e-h">E. Pantry</h2>
+        <p>Colours sampled from the snack packaging you shared: a fresh mint ground, cobalt blue for type and action, and sunflower yellow for the "pack" that holds each thing to do. The soft pink, powder blue and sage from the photo backdrops become calm surfaces behind content, and chili red is kept for the one thing that needs attention.</p>
+        <p>The bold element is the pack. Each session item and each skill sits on a sunflower label with a cobalt name, like a product on a shelf, so the screen reads at a glance. Headlines are chunky, rounded and cobalt on mint, borrowing the packaging's confident, friendly voice without copying its logo.</p>
+      </div>
+      <div>
+        <div class="swatches">
+          <div class="swatch"><span style="background:#74D690"></span><b>Fresh mint</b><i>#74D690</i></div>
+          <div class="swatch"><span style="background:#2B3FD6"></span><b>Cobalt</b><i>#2B3FD6</i></div>
+          <div class="swatch"><span style="background:#F7D23A"></span><b>Sunflower</b><i>#F7D23A</i></div>
+          <div class="swatch"><span style="background:#D9362B"></span><b>Chili</b><i>#D9362B</i></div>
+          <div class="swatch"><span style="background:#F6B8CB"></span><b>Bubblegum</b><i>#F6B8CB</i></div>
+          <div class="swatch"><span style="background:#CFE0F2"></span><b>Powder blue</b><i>#CFE0F2</i></div>
+          <div class="swatch"><span style="background:#B5CFAE"></span><b>Sage</b><i>#B5CFAE</i></div>
+          <div class="swatch"><span style="background:#141A4D"></span><b>Ink</b><i>#141A4D</i></div>
+        </div>
+        <p class="typespec">Type: Arial Rounded heavy for headlines and item names, Avenir Next for reading. Contrast rules: cobalt on mint only at headline size (4.2:1, passes for large text); body text on mint, pink and sage uses ink (9–10:1); sunflower always carries cobalt or ink text (5.1:1 and above).</p>
+      </div>
+    </div>
+
+    <div class="stage dE">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="band">
+            <p>Wednesday. Amazon interview in 9 days.</p>
+            <h4 class="display">Your 15 minutes today</h4>
+          </div>
+          <div class="body">
+            <div class="times" role="group" aria-label="Session length">
+              <button aria-pressed="false">5 min</button><button aria-pressed="true">15 min</button><button aria-pressed="false">30 min</button>
+            </div>
+            <div class="pack"><div><strong class="display">Little's Law</strong><small>Quick review</small></div><b>4 min</b></div>
+            <div class="pack"><div><strong class="display">Stakeholder story</strong><small>Practise out loud</small></div><b>6 min</b></div>
+            <div class="pack"><div><strong class="display">Program risk</strong><small>One mock question</small></div><b>5 min</b></div>
+            <button class="go display">Start session</button>
+            <div class="week">
+              <p>2 of 3 sessions this week</p>
+              <div class="dots" aria-label="Practised Monday and Tuesday">
+                <span class="on">M</span><span class="on">T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+              </div>
+            </div>
+          </div>
+        </div></div>
+        <p class="caption">Each item to do is a sunflower pack with a cobalt name and its time, so the session reads like picking three things off a shelf.</p>
+      </div>
+
+      <div class="desk">
+        <div class="desk-bar"><i></i><i></i><i></i></div>
+        <div class="desk-body">
+          <div class="deskband">
+            <div>
+              <h4 class="display">Senior Program Manager, Supply Chain</h4>
+              <p>Amazon. Interview on 23 October.</p>
+            </div>
+            <span class="badge-chili">2 gaps to close first</span>
+          </div>
+          <div class="shelf">
+            <div class="tile" style="background:#F6B8CB">
+              <span class="state gap">Critical gap</span>
+              <div class="label"><strong class="display">Program risk management</strong><small>Not on your resume yet</small></div>
+              <p>The role asks you to own risk registers across launches.</p>
+              <span class="next">Write one true story</span>
+            </div>
+            <div class="tile" style="background:#F6B8CB">
+              <span class="state gap">Gap</span>
+              <div class="label"><strong class="display">Financial acumen</strong><small>3 of 4 questions missed</small></div>
+              <p>Working capital is the weak spot.</p>
+              <span class="next">Learn it in 20 min</span>
+            </div>
+            <div class="tile" style="background:#CFE0F2">
+              <span class="state">Not enough answers yet</span>
+              <div class="label"><strong class="display">Stakeholder influence</strong><small>One resume example</small></div>
+              <p>"Aligned 6 regional leads on a single S&amp;OP calendar"</p>
+              <span class="next">Rehearse with a follow-up</span>
+            </div>
+            <div class="tile" style="background:#B5CFAE">
+              <span class="state ok">Interview ready</span>
+              <div class="label"><strong class="display">Inventory optimisation</strong><small>Proven 5 of 6 times</small></div>
+              <p>"Cut safety stock 18% across 4 distribution centres"</p>
+              <span class="next">Keep it fresh</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fit">
+      <div><h3>For acquisition</h3><p>The warmest, most consumer-friendly of the five. It feels like an everyday brand rather than a corporate tool, which suits students and early-career users and stands out in app stores.</p></div>
+      <div><h3>For retention</h3><p>The "pack" pattern makes each session feel small and finishable. Backdrop colours sort skills by state at a glance: pink for gaps, blue for unproven, sage for ready.</p></div>
+      <div><h3>Risk</h3><p>It can read as playful to senior professionals, and the palette sits close to a known consumer brand. Keep the cobalt and mint as accents of our own system, and don't reuse their wordmark style.</p></div>
+    </div>
+  </section>
+
+
+  <!-- ============================ F ============================ -->
+  <section class="direction" aria-labelledby="f-h">
+    <div class="direction-head">
+      <div>
+        <h2 id="f-h">F. Aura</h2>
+        <p>Inspired by the translation app you shared. Frosted-glass cards float over a soft glow of mint, powder blue and peach, with light, airy type and thin line icons sitting in small gradient tiles. It feels calm, modern and premium, closer to a well-made consumer AI app than a study tool.</p>
+        <p>The bold element is a single safety orange, taken from the fabric around the phone. It's used only for the one action you should take and for today's dot, so it always stands out against the soft background. Each card ends in a small arrow tile that shows it opens something.</p>
+      </div>
+      <div>
+        <div class="swatches">
+          <div class="swatch"><span style="background:#D3EADC"></span><b>Mint glow</b><i>#D3EADC</i></div>
+          <div class="swatch"><span style="background:#D2E5EE"></span><b>Powder sky</b><i>#D2E5EE</i></div>
+          <div class="swatch"><span style="background:#F7CDB0"></span><b>Peach</b><i>#F7CDB0</i></div>
+          <div class="swatch"><span style="background:#BFDDB4"></span><b>Sage</b><i>#BFDDB4</i></div>
+          <div class="swatch"><span style="background:#F2621A"></span><b>Safety orange</b><i>#F2621A</i></div>
+          <div class="swatch"><span style="background:#1D2321"></span><b>Charcoal</b><i>#1D2321</i></div>
+          <div class="swatch"><span style="background:#56605B"></span><b>Stone</b><i>#56605B</i></div>
+          <div class="swatch"><span style="background:rgba(255,255,255,0.62);background-image:linear-gradient(45deg,#D3EADC,#F7CDB0)"></span><b>Frosted glass</b><i>white 62%, blur 14px</i></div>
+        </div>
+        <p class="typespec">Type: Avenir Next at regular and medium weights only, large and loose, like the reference's light geometric sans. Contrast rules: charcoal text on everything (10.8:1 or higher); stone for secondary text only on glass or white (5.1:1 or higher); safety orange always carries charcoal text (5.0:1), never white (3.2:1 fails).</p>
+      </div>
+    </div>
+
+    <div class="stage dF">
+      <div>
+        <div class="phone"><div class="screen"><div class="p">
+          <div class="who">
+            <span class="avatar" aria-hidden="true">P</span>
+            <div><strong>Pouravi</strong><span>Interview in 9 days</span></div>
+            <span class="bell" aria-label="Reminders"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0"/></svg></span>
+          </div>
+          <div class="glass ask">Ask about your documents…</div>
+          <div class="glass hero">
+            <div class="hero-top">
+              <span class="tile" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span>
+              <div><h4>Today's 15 minutes</h4><p>Little's Law, a stakeholder story and one mock question</p></div>
+            </div>
+            <div class="times" role="group" aria-label="Session length">
+              <button aria-pressed="false">5 min</button><button aria-pressed="true">15 min</button><button aria-pressed="false">30 min</button>
+            </div>
+            <button class="go">Start session</button>
+          </div>
+          <div class="pair">
+            <div class="glass mini">
+              <div class="row1"><span class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4zM5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+              <strong>Mock interview</strong><span>Practise out loud</span>
+            </div>
+            <div class="glass mini">
+              <div class="row1"><span class="ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5zM15 4v4h4M8 13h8M8 17h5"/></svg></span><span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+              <strong>Library</strong><span>3 documents</span>
+            </div>
+          </div>
+          <div class="glass week">
+            <span>2 of 3 this week</span>
+            <span class="ticks" aria-label="Practised Monday and Tuesday; today is Wednesday"><i class="on"></i><i class="on"></i><i class="today"></i><i></i><i></i></span>
+          </div>
+        </div></div></div>
+        <p class="caption">Soft glass for everything, one orange for the action. The ask bar keeps the tutor one tap away.</p>
+      </div>
+
+      <div class="desk">
+        <div class="desk-bar"><i></i><i></i><i></i></div>
+        <div class="desk-body">
+          <div class="dhead">
+            <div><h5>Senior Program Manager, Supply Chain</h5><p>Amazon. Interview on 23 October.</p></div>
+            <span class="chip"><b>2 gaps</b> to close first</span>
+          </div>
+          <div class="grid">
+            <div class="skill t-peach">
+              <div class="top"><strong>Program risk management</strong><span class="state gap">Critical gap</span></div>
+              <p>Not on your resume yet.</p>
+              <span class="meta">The role asks you to own risk registers across launches.</span>
+              <div class="bottom"><span>Write one true story</span><span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            </div>
+            <div class="skill t-peach">
+              <div class="top"><strong>Financial acumen</strong><span class="state gap">Gap</span></div>
+              <p>You missed 3 of 4 working-capital questions.</p>
+              <span class="meta">High importance for this role.</span>
+              <div class="bottom"><span>Learn it in 20 min</span><span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            </div>
+            <div class="skill t-sky">
+              <div class="top"><strong>Stakeholder influence</strong><span class="state">Not enough answers yet</span></div>
+              <p>"Aligned 6 regional leads on a single S&amp;OP calendar"</p>
+              <span class="meta">One good resume example.</span>
+              <div class="bottom"><span>Rehearse with a follow-up</span><span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            </div>
+            <div class="skill t-sage">
+              <div class="top"><strong>Inventory optimisation</strong><span class="state">Interview ready</span></div>
+              <p>"Cut safety stock 18% across 4 distribution centres"</p>
+              <span class="meta">Proven on your resume and in 5 of 6 answers.</span>
+              <div class="bottom"><span>Keep it fresh</span><span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fit">
+      <div><h3>For acquisition</h3><p>Looks like a current, high-end AI product, which helps app-store screenshots and a premium price. It feels approachable without looking childish.</p></div>
+      <div><h3>For retention</h3><p>Calm surfaces suit stressful prep weeks, and the single orange action makes "what do I do now" obvious every time you open it.</p></div>
+      <div><h3>Risk</h3><p>Glass and soft gradients are popular right now, so it can look like other AI apps, and blur effects cost battery and performance on older phones. Use the glow as background only, keep text on solid-enough glass, and offer a "reduce transparency" fallback.</p></div>
+    </div>
+  </section>
+
+  <section class="recommend" aria-labelledby="rec-h">
+    <h2 id="rec-h">Recommendation</h2>
+    <p>Build on <strong>B, Mesh</strong>, borrowing one idea from A. The colour fields give Mindmesh a brand people will recognise, and they solve a real navigation problem by showing where you are. The skill mesh is the strongest retention device of the three, and it's honest because nodes only fill from real answers. From A, keep the marker-yellow highlight for evidence quotes in the reader and the gap report. It's the clearest way to show that every claim is backed by a source.</p>
+    <p>If the brand should feel <strong>premium rather than playful</strong>, choose <strong>D, Atelier</strong> instead. It's the best fit for senior professionals and for any later move into paid coaching or employer partnerships. A good middle path is to use D's restraint as the base and bring in B's area colours only as thin accents, for example a slim tangerine rule on Today and violet on Prep. That keeps the wayfinding benefit without the loud fields.</p>
+    <p>If you want a <strong>warmer, everyday consumer feel</strong>, E, Pantry, is the friendliest option, especially for students and early-career users. It works best for the mobile Today screen, and it pairs well with D's quieter desktop layout for the gap report.</p>
+    <p>If you want <strong>premium and modern with some warmth</strong>, F, Aura, sits between D and the bright directions: soft and calm like D, but with colour and a vivid orange action. It's the strongest fit for the mobile app, provided it has a solid, no-blur fallback for older phones and accessibility settings.</p>
+    <p>Before committing, test B, C, D, E and F with the 8–10 target users in the research plan. Show each person the gap report in each style and ask which they'd trust with their resume and which they'd open again tomorrow. Trust is the deciding question for senior professionals, and it's the one place C might lose.</p>
+  </section>
+</div>
+</body>
+</html>

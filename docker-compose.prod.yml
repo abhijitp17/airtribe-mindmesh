@@ -1,0 +1,64 @@
+# Production overrides:  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Needs a .env with real secrets (see .env.example and docs/deploy.md). Put a TLS-terminating
+# reverse proxy (Caddy, nginx, or your platform's load balancer) in front of web and api.
+x-backend-env: &backend-env
+  APP_ENV: prod
+  LOG_FORMAT: json
+  RATE_LIMIT_PER_MINUTE: "60"
+  TRUST_PROXY: "1"
+
+services:
+  db:
+    ports: !reset []          # never expose Postgres publicly
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped
+
+  migrate:
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      <<: *backend-env
+
+  api:
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      <<: *backend-env
+      CORS_ORIGINS: ${WEB_URL:?set WEB_URL in .env}
+    restart: unless-stopped
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "${API_WORKERS:-2}", "--proxy-headers"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://127.0.0.1:8000/api/health/ready', timeout=3).status != 200)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  worker:
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      <<: *backend-env
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
+    deploy:
+      replicas: ${WORKER_REPLICAS:-1}  # scale out: jobs use SKIP LOCKED; periodic tasks elect one leader
+    restart: unless-stopped
+
+  web:
+    build:
+      args:
+        NEXT_PUBLIC_API_URL: ${API_PUBLIC_URL:?set API_PUBLIC_URL in .env}
+        NEXT_PUBLIC_AUTH_PROVIDER: ${AUTH_PROVIDER:-local}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}
+    env_file:
+      - path: .env
+        required: true
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
